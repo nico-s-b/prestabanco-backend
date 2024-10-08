@@ -37,5 +37,15 @@ public class CreditService {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
-    }    
+    }
+
+    //Método para obtener la cuota mensual de un crédito dado sus parámetros
+    public int getCreditInstallment(Credit credit){
+        int n = credit.getLoanPeriod()*12;
+        double annualRate = credit.getAnnualRate();
+        double rate = annualRate / 12 / 100;
+        double compoundInterest = Math.pow(1 + rate, n);
+        int capital = credit.getCreditMount();
+        return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
+    }
 }

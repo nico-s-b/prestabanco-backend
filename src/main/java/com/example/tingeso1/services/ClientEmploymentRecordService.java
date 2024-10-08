@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+import com.example.tingeso1.entities.Credit;
 import com.example.tingeso1.utils.MiscUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ public class ClientEmploymentRecordService {
 
     @Autowired
     ClientEmploymentRecordRepository clientEmploymentRecordRepository;
+
+    @Autowired
+    CreditService creditService;
 
     public ArrayList<ClientEmploymentRecord> getClientEmploymentRecords(){
         return (ArrayList<ClientEmploymentRecord>) clientEmploymentRecordRepository.findAll();
@@ -51,6 +55,19 @@ public class ClientEmploymentRecordService {
         }else {
             return true;
         }
+    }
+
+    public boolean hasEnoughIncomeInstallmentRate(ClientEmploymentRecord employmentRecord, Credit credit){
+        int monthlyInstallment = creditService.getCreditInstallment(credit);
+        float rate;
+        if (employmentRecord.getIsEmployee()){
+            rate = ((float) monthlyInstallment / employmentRecord.getMonthlyIncome())*100;
+        }else{
+            // Considerar ingreso mensual de últimos 2 años para trabajador independiente
+            rate = ((float) monthlyInstallment / ((float) employmentRecord.getLastTwoYearIncome() / 24) )*100;
+        }
+        //Aprobar si relación no supera el 35% (o sea, es 35% o menor)
+        return rate < 36;
     }
 
 }
