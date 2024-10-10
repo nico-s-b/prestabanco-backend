@@ -1,7 +1,9 @@
 package com.example.tingeso1.services;
 
+import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.entities.ClientEmploymentRecord;
 import com.example.tingeso1.entities.Credit;
+import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.repositories.CreditRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.OngoingStubbing;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -154,4 +157,149 @@ public class CreditServiceTest {
         assertThat(montlhlyInstallment).isEqualTo(632649);
     }
 
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_FIRSTHOME_OK() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.FIRSTHOME);
+        credit.setCreditMount(800);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_FIRSTHOME_FAIL() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.FIRSTHOME);
+        credit.setCreditMount(801);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_SECONDHOME_OK() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.SECONDHOME);
+        credit.setCreditMount(700);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_SECONDHOME_FAIL() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.SECONDHOME);
+        credit.setCreditMount(701);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_COMERCIAL_OK() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.COMERCIAL);
+        credit.setCreditMount(600);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_COMERCIAL_FAIL() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.COMERCIAL);
+        credit.setCreditMount(601);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_REMODELING_OK() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.REMODELING);
+        credit.setCreditMount(500);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void TestIsCreditAmountLessThanMaxAmount_REMODELING_FAIL() {
+        //Given
+        Credit credit = new Credit();
+        credit.setCreditType(CreditType.REMODELING);
+        credit.setCreditMount(501);
+        credit.setPropertyValue(1000);
+
+        //When
+        boolean result = creditService.isCreditAmountLessThanMaxAmount(credit);
+
+        assertFalse(result);
+    }
+
+    @Test
+    void testIsClientAgeAllowed_Success() {
+        //Given
+        ZonedDateTime mockRequestDate = ZonedDateTime.parse("2000-01-01T00:00:00.000+01:01[America/Santiago]");
+        Credit credit = new Credit();
+        credit.setRequestDate(mockRequestDate);
+        credit.setLoanPeriod(20);
+        Client client = new Client();
+        client.setBirthDate(mockRequestDate.minusYears(50).plusDays(1));
+
+        //When
+        boolean result = creditService.isClientAgeAllowed(credit, client);
+
+        //Then
+        assertTrue(result);
+    }
+
+    @Test
+    void testIsClientAgeAllowed_Failure() {
+        //Given
+        ZonedDateTime mockRequestDate = ZonedDateTime.parse("2000-01-01T00:00:00.000+01:01[America/Santiago]");
+        Credit credit = new Credit();
+        credit.setRequestDate(mockRequestDate);
+        credit.setLoanPeriod(20);
+        Client client = new Client();
+        client.setBirthDate(mockRequestDate.minusYears(50));
+
+        //When
+        boolean result = creditService.isClientAgeAllowed(credit, client);
+
+        //Then
+        assertFalse(result);
+    }
 }

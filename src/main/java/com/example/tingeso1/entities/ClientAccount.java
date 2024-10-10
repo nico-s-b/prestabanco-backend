@@ -1,5 +1,6 @@
 package com.example.tingeso1.entities;
 
+import com.example.tingeso1.enums.SaveCapacityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,4 +29,10 @@ public class ClientAccount {
 
     private int accountBalance;
     private ZonedDateTime startDate;
+    private Boolean r1MinimumBalance;
+    private Boolean r2ConsistentSaves;
+    private Boolean r3PeriodicDeposits;
+    private Boolean r4BalanceYearsOfAccountRelation;
+    private Boolean r5RecentWithdrawals;
+    private SaveCapacityStatus saveCapacityStatus;
 }

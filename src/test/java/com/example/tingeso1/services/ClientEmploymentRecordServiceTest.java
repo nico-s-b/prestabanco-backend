@@ -31,9 +31,6 @@ public class ClientEmploymentRecordServiceTest {
     @Mock
     private CreditService creditService;
 
-    @InjectMocks
-    private ClientEmploymentRecordService clientEmploymentRecordService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -149,9 +146,11 @@ public class ClientEmploymentRecordServiceTest {
         //Given
         ZonedDateTime oneYearAgo = ZonedDateTime.now().minusYears(1).minusDays(1);
         employmentRecord.setCurrentWorkStartDate(oneYearAgo);
+        Credit credit = new Credit();
+        credit.setRequestDate(ZonedDateTime.now());
 
         //When
-        boolean hasMoreThan1Year = employmentRecordService.hasEnoughYearsOfService(employmentRecord);
+        boolean hasMoreThan1Year = employmentRecordService.hasEnoughYearsOfService(employmentRecord, credit);
 
         //Then
         assertThat(hasMoreThan1Year).isEqualTo(true);
@@ -162,12 +161,44 @@ public class ClientEmploymentRecordServiceTest {
         //Given
         ZonedDateTime oneYearAgo = ZonedDateTime.now().minusYears(1).plusDays(1);
         employmentRecord.setCurrentWorkStartDate(oneYearAgo);
+        Credit credit = new Credit();
+        credit.setRequestDate(ZonedDateTime.now());
 
         //When
-        boolean hasMoreThan1Year = employmentRecordService.hasEnoughYearsOfService(employmentRecord);
+        boolean hasMoreThan1Year = employmentRecordService.hasEnoughYearsOfService(employmentRecord, credit);
 
         //Then
         assertThat(hasMoreThan1Year).isEqualTo(false);
+    }
+
+    @Test
+    void testGetClientMonthlyIncome_WhenClientIsEmployee () {
+        //Given
+        ClientEmploymentRecord record = new ClientEmploymentRecord();
+        record.setIsEmployee(true);
+        record.setMonthlyIncome(280000);
+        record.setLastTwoYearIncome(0);
+
+        //when
+        int result = employmentRecordService.getClientMonthlyIncome(record);
+
+        //Then
+        assertThat(result).isEqualTo(280000);
+    }
+
+    @Test
+    void testGetClientMonthlyIncome_WhenClientIsNotEmployee () {
+        //Given
+        ClientEmploymentRecord record = new ClientEmploymentRecord();
+        record.setIsEmployee(false);
+        record.setMonthlyIncome(0);
+        record.setLastTwoYearIncome(2400000);
+
+        //when
+        int result = employmentRecordService.getClientMonthlyIncome(record);
+
+        //Then
+        assertThat(result).isEqualTo(100000);
     }
 
     @Test

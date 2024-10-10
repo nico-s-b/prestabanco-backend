@@ -46,10 +46,19 @@ public class ClientEmploymentRecordService {
         }
     }
 
+    //Entrega el ingreso mensual del cliente, dependiendo si es empleado o si es independiente
+    public int getClientMonthlyIncome(ClientEmploymentRecord employmentRecord){
+        if (employmentRecord.getIsEmployee()) {
+            return employmentRecord.getMonthlyIncome();
+        }else{
+            return employmentRecord.getLastTwoYearIncome() / 24;
+        }
+    }
+
     //Calcula años de servicio de un empleado a partir de fecha de inicio de su trabajo actual
-    public boolean hasEnoughYearsOfService(ClientEmploymentRecord employmentRecord){
+    public boolean hasEnoughYearsOfService(ClientEmploymentRecord employmentRecord, Credit credit){
         ZonedDateTime start = employmentRecord.getCurrentWorkStartDate();
-        int yearsOfService = MiscUtils.getYearsUntilNow(start);
+        int yearsOfService = (int) start.until(credit.getRequestDate(), ChronoUnit.YEARS);
         if (yearsOfService == 0){
             return false;
         }else {
@@ -60,12 +69,7 @@ public class ClientEmploymentRecordService {
     public boolean hasEnoughIncomeInstallmentRate(ClientEmploymentRecord employmentRecord, Credit credit){
         int monthlyInstallment = creditService.getCreditInstallment(credit);
         float rate;
-        if (employmentRecord.getIsEmployee()){
-            rate = ((float) monthlyInstallment / employmentRecord.getMonthlyIncome())*100;
-        }else{
-            // Considerar ingreso mensual de últimos 2 años para trabajador independiente
-            rate = ((float) monthlyInstallment / ((float) employmentRecord.getLastTwoYearIncome() / 24) )*100;
-        }
+        rate = ((float) monthlyInstallment / getClientMonthlyIncome(employmentRecord))*100;
         //Aprobar si relación no supera el 35% (o sea, es 35% o menor)
         return rate < 36;
     }

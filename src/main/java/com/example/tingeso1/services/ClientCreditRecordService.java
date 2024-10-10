@@ -2,6 +2,8 @@ package com.example.tingeso1.services;
 
 import java.util.ArrayList;
 
+import com.example.tingeso1.entities.ClientEmploymentRecord;
+import com.example.tingeso1.entities.Credit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,10 @@ public class ClientCreditRecordService {
 
     @Autowired
     ClientCreditRecordRepository clientCreditRecordRepository;
+    @Autowired
+    private CreditService creditService;
+    @Autowired
+    private ClientEmploymentRecordService employmentRecordService;
 
     public ArrayList<ClientCreditRecord> getClientCreditRecords(){
         return (ArrayList<ClientCreditRecord>) clientCreditRecordRepository.findAll();
@@ -37,5 +43,11 @@ public class ClientCreditRecordService {
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
+    }
+
+    public boolean hasGoodDebtIncomeRate(ClientCreditRecord clientCreditRecord, ClientEmploymentRecord clientEmploymentRecord, Credit credit) {
+        int totalProjectedDebt = clientCreditRecord.getDebtAmount() + creditService.getCreditInstallment(credit);
+        int income = employmentRecordService.getClientMonthlyIncome(clientEmploymentRecord);
+        return  ((float) totalProjectedDebt / income)*100 < 51;
     }
 }

@@ -1,7 +1,11 @@
 package com.example.tingeso1.services;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+import com.example.tingeso1.entities.Client;
+import com.example.tingeso1.enums.CreditType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,5 +51,30 @@ public class CreditService {
         double compoundInterest = Math.pow(1 + rate, n);
         int capital = credit.getCreditMount();
         return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
+    }
+
+    public boolean isCreditAmountLessThanMaxAmount(Credit credit){
+        switch (credit.getCreditType()){
+            case FIRSTHOME -> {
+                return credit.getCreditMount() <= credit.getPropertyValue()*0.8;
+            }
+            case SECONDHOME -> {
+                return credit.getCreditMount() <= credit.getPropertyValue()*0.7;
+            }
+            case COMERCIAL -> {
+                return credit.getCreditMount() <= credit.getPropertyValue()*0.6;
+            }
+            case REMODELING -> {
+                return credit.getCreditMount() <= credit.getPropertyValue()*0.5;
+            }
+        }
+        return false;
+    }
+
+    public boolean isClientAgeAllowed(Credit credit, Client client){
+        ZonedDateTime endOfPaymentDate = credit.getRequestDate().plusYears((long) credit.getLoanPeriod());
+        int clientAgeAtEndOfPayment = (int) client.getBirthDate().until(endOfPaymentDate, ChronoUnit.YEARS);
+        System.out.println(clientAgeAtEndOfPayment);
+        return clientAgeAtEndOfPayment < 70;
     }
 }

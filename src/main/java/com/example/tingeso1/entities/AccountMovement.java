@@ -25,5 +25,5 @@ public class AccountMovement {
 
     private ZonedDateTime movementDate;
     private int amount;
-    private Boolean isDeposit;
+    private Boolean isDeposit;  //Si on es depósito, es retiro
 }

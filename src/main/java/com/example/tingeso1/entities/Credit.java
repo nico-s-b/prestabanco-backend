@@ -39,6 +39,7 @@ public class Credit {
     private int loanPeriod;
     private float annualRate;
     private int creditMount;
+    private int propertyValue;
     private int totalCost;
     private Boolean isSimulation;
     

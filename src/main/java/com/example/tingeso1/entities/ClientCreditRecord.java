@@ -28,5 +28,5 @@ public class ClientCreditRecord {
     private Boolean hasSeriousDebts;
     private int debtAmount;
     private ZonedDateTime lastDebtDate;
-    private ZonedDateTime oldestDebtDate;
+    private ZonedDateTime oldestUnpaidInstallmentDate;
 }
