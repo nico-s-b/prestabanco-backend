@@ -24,9 +24,9 @@ public class ClientCreditRecord {
     @JoinColumn(name = "client_id")
     private Client client;
 
+    private int debtAmount;                 //Ingresado por cliente
     private Boolean isSlowpayer;
     private Boolean hasSeriousDebts;
-    private int debtAmount;
     private ZonedDateTime lastDebtDate;
     private ZonedDateTime oldestUnpaidInstallmentDate;
 }

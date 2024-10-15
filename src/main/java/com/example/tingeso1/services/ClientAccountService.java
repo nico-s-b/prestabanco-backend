@@ -45,18 +45,13 @@ public class ClientAccountService {
         }
     }
 
-    //R1: Verifica si cliente tiene saldo mínimo necesario (al menos 10% del monto del crédito)
-    void hasMinimumBalance(ClientAccount clientAccount, Credit credit){
+    //R71: Verifica si cliente tiene saldo mínimo necesario (al menos 10% del monto del crédito)
+    void hasR1MinimumBalance(ClientAccount clientAccount, Credit credit){
         clientAccount.setR1MinimumBalance(clientAccount.getAccountBalance() >= credit.getCreditMount()*0.1);
     }
 
-    // Calcula saldo en base a movimientos (ver si es necesario implementar)
-    int balanceCalculator(ClientAccount clientAccount){
-       return clientAccount.getAccountBalance();
-    }
-
-    //R4 Verificación de relación de saldo y años de cuenta (al menos 20% de préstamo para cuenta de menos de 2 años, 10% para cuenta con 2 o más años)
-    void hasGoodBalanceYearsRelation(Credit credit, ClientAccount clientAccount) {
+    //R74 Verificación de relación de saldo y años de cuenta (al menos 20% de préstamo para cuenta de menos de 2 años, 10% para cuenta con 2 o más años)
+    void hasR4GoodBalanceYearsRelation(Credit credit, ClientAccount clientAccount) {
         int yearsSinceAccountStart = (int) clientAccount.getStartDate().until(credit.getRequestDate(), ChronoUnit.YEARS);
         if (yearsSinceAccountStart < 2){
             clientAccount.setR4BalanceYearsOfAccountRelation(clientAccount.getAccountBalance() >= credit.getCreditMount()*0.2);
@@ -68,6 +63,7 @@ public class ClientAccountService {
     //Verifica cuántas reglas cumple el cliente
     int rulesApprovedFromSaveCapacity(ClientAccount clientAccount){
         int rules = 0;
+
         if (clientAccount.getR1MinimumBalance()){
             rules++;
         }

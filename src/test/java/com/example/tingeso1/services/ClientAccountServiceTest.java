@@ -149,7 +149,7 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasMinimumBalance(account, credit);
+        clientAccountService.hasR1MinimumBalance(account, credit);
 
         assertTrue(account.getR1MinimumBalance());
     }
@@ -163,7 +163,7 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasMinimumBalance(account, credit);
+        clientAccountService.hasR1MinimumBalance(account, credit);
 
         assertFalse(account.getR1MinimumBalance());
     }
@@ -179,7 +179,7 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasGoodBalanceYearsRelation(credit, account);
+        clientAccountService.hasR4GoodBalanceYearsRelation(credit, account);
 
         //Then
         assertTrue(account.getR4BalanceYearsOfAccountRelation());
@@ -196,7 +196,7 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasGoodBalanceYearsRelation(credit, account);
+        clientAccountService.hasR4GoodBalanceYearsRelation(credit, account);
 
         //Then
         assertFalse(account.getR4BalanceYearsOfAccountRelation());
@@ -213,7 +213,7 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasGoodBalanceYearsRelation(credit, account);
+        clientAccountService.hasR4GoodBalanceYearsRelation(credit, account);
 
         //Then
         assertTrue(account.getR4BalanceYearsOfAccountRelation());
@@ -230,10 +230,10 @@ public class ClientAccountServiceTest {
         credit.setCreditMount(1000);
 
         //When
-        clientAccountService.hasGoodBalanceYearsRelation(credit, account);
+        clientAccountService.hasR4GoodBalanceYearsRelation(credit, account);
 
         //Then
-        assertFalse(account.getR1MinimumBalance());
+        assertFalse(account.getR4BalanceYearsOfAccountRelation());
     }
 
     @Test
@@ -273,18 +273,50 @@ public class ClientAccountServiceTest {
     @Test
     void testHasAllRulesEvaluated_Failure() {
         //Given
-        ClientAccount account = new ClientAccount();
-        account.setR1MinimumBalance(true);
-        account.setR2ConsistentSaves(true);
-        account.setR3PeriodicDeposits(true);
-        account.setR4BalanceYearsOfAccountRelation(true);
-        //account.setR5RecentWithdrawals(false);
+        ClientAccount account1 = new ClientAccount();
+        //account1.setR1MinimumBalance(true);
+        account1.setR2ConsistentSaves(true);
+        account1.setR3PeriodicDeposits(true);
+        account1.setR4BalanceYearsOfAccountRelation(true);
+        account1.setR5RecentWithdrawals(false);
+        ClientAccount account2 = new ClientAccount();
+        account2.setR1MinimumBalance(true);
+        //account2.setR2ConsistentSaves(true);
+        account2.setR3PeriodicDeposits(true);
+        account2.setR4BalanceYearsOfAccountRelation(true);
+        account2.setR5RecentWithdrawals(false);
+        ClientAccount account3 = new ClientAccount();
+        account3.setR1MinimumBalance(true);
+        account3.setR2ConsistentSaves(true);
+        //account3.setR3PeriodicDeposits(true);
+        account3.setR4BalanceYearsOfAccountRelation(true);
+        account3.setR5RecentWithdrawals(false);
+        ClientAccount account4 = new ClientAccount();
+        account4.setR1MinimumBalance(true);
+        account4.setR2ConsistentSaves(true);
+        account4.setR3PeriodicDeposits(true);
+        //account4.setR4BalanceYearsOfAccountRelation(true);
+        account4.setR5RecentWithdrawals(false);
+        ClientAccount account5 = new ClientAccount();
+        account5.setR1MinimumBalance(true);
+        account5.setR2ConsistentSaves(true);
+        account5.setR3PeriodicDeposits(true);
+        account5.setR4BalanceYearsOfAccountRelation(true);
+        //account5.setR5RecentWithdrawals(false);
 
         //When
-        boolean result = clientAccountService.hasAllRulesEvaluated(account);
+        boolean result1 = clientAccountService.hasAllRulesEvaluated(account1);
+        boolean result2 = clientAccountService.hasAllRulesEvaluated(account2);
+        boolean result3 = clientAccountService.hasAllRulesEvaluated(account3);
+        boolean result4 = clientAccountService.hasAllRulesEvaluated(account4);
+        boolean result5 = clientAccountService.hasAllRulesEvaluated(account5);
 
         //Then
-        assertFalse(result);
+        assertFalse(result1);
+        assertFalse(result2);
+        assertFalse(result3);
+        assertFalse(result4);
+        assertFalse(result5);
     }
 
     @Test

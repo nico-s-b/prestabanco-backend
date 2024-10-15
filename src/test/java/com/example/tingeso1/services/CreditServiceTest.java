@@ -1,7 +1,6 @@
 package com.example.tingeso1.services;
 
 import com.example.tingeso1.entities.Client;
-import com.example.tingeso1.entities.ClientEmploymentRecord;
 import com.example.tingeso1.entities.Credit;
 import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.repositories.CreditRepository;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class CreditServiceTest {

@@ -23,16 +23,13 @@ public class ClientAccount {
 
     @OneToOne(mappedBy = "account")
     private Client client;
-    
-    @OneToMany(mappedBy="account")
-    private List<AccountMovement> movements;
 
     private int accountBalance;
     private ZonedDateTime startDate;
-    private Boolean r1MinimumBalance;
-    private Boolean r2ConsistentSaves;
-    private Boolean r3PeriodicDeposits;
-    private Boolean r4BalanceYearsOfAccountRelation;
-    private Boolean r5RecentWithdrawals;
+    private Boolean r1MinimumBalance;                   //Has automatic method
+    private Boolean r2ConsistentSaves;                  //Has to be manually verified
+    private Boolean r3PeriodicDeposits;                 //Has to be manually verified
+    private Boolean r4BalanceYearsOfAccountRelation;    //Has automatic method
+    private Boolean r5RecentWithdrawals;                //Has to be manually verified
     private SaveCapacityStatus saveCapacityStatus;
 }

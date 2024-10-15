@@ -53,6 +53,7 @@ public class CreditService {
         return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
     }
 
+    //R5 Monto máximo de financiamiento
     public boolean isCreditAmountLessThanMaxAmount(Credit credit){
         switch (credit.getCreditType()){
             case FIRSTHOME -> {
@@ -67,14 +68,14 @@ public class CreditService {
             case REMODELING -> {
                 return credit.getCreditMount() <= credit.getPropertyValue()*0.5;
             }
+            default -> throw new IllegalStateException("Unexpected value: " + credit.getCreditType());
         }
-        return false;
     }
 
+    //R6 Edad del solicitante
     public boolean isClientAgeAllowed(Credit credit, Client client){
         ZonedDateTime endOfPaymentDate = credit.getRequestDate().plusYears((long) credit.getLoanPeriod());
         int clientAgeAtEndOfPayment = (int) client.getBirthDate().until(endOfPaymentDate, ChronoUnit.YEARS);
-        System.out.println(clientAgeAtEndOfPayment);
         return clientAgeAtEndOfPayment < 70;
     }
 }

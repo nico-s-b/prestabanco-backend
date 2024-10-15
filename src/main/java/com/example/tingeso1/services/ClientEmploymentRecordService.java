@@ -55,17 +55,7 @@ public class ClientEmploymentRecordService {
         }
     }
 
-    //Calcula años de servicio de un empleado a partir de fecha de inicio de su trabajo actual
-    public boolean hasEnoughYearsOfService(ClientEmploymentRecord employmentRecord, Credit credit){
-        ZonedDateTime start = employmentRecord.getCurrentWorkStartDate();
-        int yearsOfService = (int) start.until(credit.getRequestDate(), ChronoUnit.YEARS);
-        if (yearsOfService == 0){
-            return false;
-        }else {
-            return true;
-        }
-    }
-
+    //R1
     public boolean hasEnoughIncomeInstallmentRate(ClientEmploymentRecord employmentRecord, Credit credit){
         int monthlyInstallment = creditService.getCreditInstallment(credit);
         float rate;
@@ -73,5 +63,21 @@ public class ClientEmploymentRecordService {
         //Aprobar si relación no supera el 35% (o sea, es 35% o menor)
         return rate < 36;
     }
+
+    //R3 Calcula años de servicio de un empleado a partir de fecha de inicio de su trabajo actual
+    public boolean hasEnoughYearsOfService(ClientEmploymentRecord employmentRecord, Credit credit){
+        ZonedDateTime start = employmentRecord.getCurrentWorkStartDate();
+        int yearsOfService = (int) start.until(credit.getRequestDate(), ChronoUnit.YEARS);
+        // Antigüedad menor a un año es rechazada
+        if (yearsOfService == 0){
+            return false;
+        }
+        // Aprobar si al menos tiene 1 año de antigüedad
+        else {
+            return true;
+        }
+    }
+
+
 
 }

@@ -45,9 +45,11 @@ public class ClientCreditRecordService {
         }
     }
 
+    //R4: Relación entre deuda e ingreso
     public boolean hasGoodDebtIncomeRate(ClientCreditRecord clientCreditRecord, ClientEmploymentRecord clientEmploymentRecord, Credit credit) {
         int totalProjectedDebt = clientCreditRecord.getDebtAmount() + creditService.getCreditInstallment(credit);
         int income = employmentRecordService.getClientMonthlyIncome(clientEmploymentRecord);
+        //Rechazar si la suma de deudas (considerando cuota del crédito) es mayor a 50%
         return  ((float) totalProjectedDebt / income)*100 < 51;
     }
 }

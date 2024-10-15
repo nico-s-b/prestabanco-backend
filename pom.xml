@@ -71,6 +71,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>prestabanco1</finalName>
 	</build>
 
 </project>
