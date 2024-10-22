@@ -46,4 +46,15 @@ public class UserService {
             throw new Exception(e.getMessage());
         }
     }
+
+    public User authenticate(String email, String password){
+        User usuario = userRepository.findByEmail(email);
+        if (usuario != null){
+            if (usuario.getPass().equals(password)){
+                return usuario;
+            }
+        }
+        return null;
+    }
+
 }

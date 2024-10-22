@@ -29,13 +29,12 @@ public class DocumentEntity {
     @JoinColumn(name="credit_id", nullable=true)
     private Credit credit;
 
-    @ManyToOne
-    @JoinColumn(name="client_id", nullable=true)
-    private Client client;
-
     @Enumerated(EnumType.STRING)
     private DocumentType documentType;
-    
-    private String url;
+
+    @Lob
+    @Column(columnDefinition = "BYTEA")
+    private byte[] fileData;
+
     private ZonedDateTime uploadDate;
 }

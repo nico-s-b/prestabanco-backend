@@ -27,7 +27,8 @@ public class Credit {
     @JoinColumn(name="client_id", nullable=false)
     private Client client;
 
-    @OneToOne(mappedBy = "credit")
+    @ManyToOne
+    @JoinColumn(name = "executive_id", nullable = false)
     private Executive executive;
 
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL)

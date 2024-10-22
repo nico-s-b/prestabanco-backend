@@ -31,7 +31,4 @@ public class Client extends User{
     @OneToMany(mappedBy="client", cascade = CascadeType.ALL)
     private List<Credit> credits;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<DocumentEntity> documents;
-
 }

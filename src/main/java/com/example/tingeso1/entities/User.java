@@ -28,5 +28,5 @@ public class User {
     private String email;
     private String phone;
     private ZonedDateTime birthDate;
-    private int passHash;
+    private String pass;
 }

@@ -43,6 +43,8 @@ public class CreditService {
         }
     }
 
+
+
     //Método para obtener la cuota mensual de un crédito dado sus parámetros
     public int getCreditInstallment(Credit credit){
         int n = credit.getLoanPeriod()*12;

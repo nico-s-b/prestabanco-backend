@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @DiscriminatorValue("EXECUTIVE")
 @Data
@@ -15,8 +18,7 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 public class Executive extends User{
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "credit_id", referencedColumnName = "id")
-    private Credit credit;
+    @OneToMany(mappedBy = "executive", cascade = CascadeType.ALL)
+    private List<Credit> credits = new ArrayList<>();
 
 }
