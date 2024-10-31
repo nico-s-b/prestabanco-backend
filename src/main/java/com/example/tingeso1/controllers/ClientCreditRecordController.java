@@ -2,6 +2,8 @@ package com.example.tingeso1.controllers;
 
 import java.util.List;
 
+import com.example.tingeso1.entities.Client;
+import com.example.tingeso1.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ import com.example.tingeso1.entities.ClientCreditRecord;
 public class ClientCreditRecordController {
     @Autowired
     ClientCreditRecordService clientCreditRecordService;
+
+    @Autowired
+    ClientService clientService;
 
     @GetMapping("/")
     public ResponseEntity<List<ClientCreditRecord>> listClientCreditRecords() {
@@ -32,16 +37,34 @@ public class ClientCreditRecordController {
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ClientCreditRecord> saveClientCreditRecord(@RequestBody ClientCreditRecord clientCreditRecord) {
-        ClientCreditRecord clientCreditRecordNew = clientCreditRecordService.saveClientCreditRecord(clientCreditRecord);
-        return ResponseEntity.ok(clientCreditRecordNew);
+    @PostMapping("/{clientId}")
+    public ResponseEntity<ClientCreditRecord> createCreditRecord(@PathVariable Long clientId, @RequestBody ClientCreditRecord creditRecord) {
+        Client client = clientService.getClientById(clientId);
+        if (client != null) {
+            creditRecord.setClient(client);
+            ClientCreditRecord savedRecord = clientCreditRecordService.saveClientCreditRecord(creditRecord);
+            return ResponseEntity.ok(savedRecord);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/")
-    public ResponseEntity<ClientCreditRecord> updateClientCreditRecord(@RequestBody ClientCreditRecord clientCreditRecord) {
-        ClientCreditRecord clientCreditRecordUpdated = clientCreditRecordService.updateClientCreditRecord(clientCreditRecord);
-        return ResponseEntity.ok(clientCreditRecordUpdated);
+    @PutMapping("/{clientId}/{recordId}")
+    public ResponseEntity<ClientCreditRecord> updateClientCreditRecord(@PathVariable Long clientId, @PathVariable Long recordId, @RequestBody ClientCreditRecord creditRecord) {
+        Client client = clientService.getClientById(clientId);
+        if (client != null) {
+            ClientCreditRecord existingRecord = clientCreditRecordService.getClientCreditRecordById(recordId);
+            if (existingRecord != null) {
+                creditRecord.setId(recordId);
+                creditRecord.setClient(client);
+                ClientCreditRecord updatedRecord = clientCreditRecordService.updateClientCreditRecord(creditRecord);
+                return ResponseEntity.ok(updatedRecord);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

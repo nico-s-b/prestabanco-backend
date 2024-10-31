@@ -1,5 +1,6 @@
 package com.example.tingeso1.services;
 
+import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.entities.ClientAccount;
 import com.example.tingeso1.entities.Credit;
 import com.example.tingeso1.enums.SaveCapacityStatus;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ import static org.mockito.Mockito.when;
 public class ClientAccountServiceTest {
 
     @InjectMocks
-    ClientAccountService clientAccountService = new ClientAccountService();
+    private ClientAccountService clientAccountService;
 
     @Mock
     private ClientAccountRepository clientAccountRepository;
@@ -90,6 +92,23 @@ public class ClientAccountServiceTest {
     }
 
     @Test
+    void testGetClientAccountByClient() {
+        //Given
+        ClientAccount account = new ClientAccount();
+        Client client = new Client();
+
+        when(clientAccountRepository.findByClient(client)).thenReturn(account);
+
+        //When
+        ClientAccount result = clientAccountService.getClientAccountByClient(client);
+
+        //Then
+        assertNotNull(result);
+        assertEquals(account, result);
+        verify(clientAccountRepository, times(1)).findByClient(client);
+    }
+
+    @Test
     void testUpdateClientAccount() {
         //Given
         ClientAccount account = new ClientAccount();
@@ -138,6 +157,30 @@ public class ClientAccountServiceTest {
         //Then
         assertEquals("Error al eliminar", exception.getMessage());
         verify(clientAccountRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testEvaluateAccountCreditRules() {
+        // Given
+        ClientAccount clientAccount = new ClientAccount();
+        clientAccount.setAccountBalance(50000);
+        clientAccount.setStartDate(ZonedDateTime.now().minusYears(3));
+
+        Client client = new Client();
+        client.setAccount(clientAccount);
+
+        Credit credit = new Credit();
+        credit.setClient(client);
+        credit.setCreditMount(100000);
+        credit.setRequestDate(ZonedDateTime.now());
+
+        // When
+        clientAccountService.evaluateAccountCreditRules(credit);
+
+        // Then
+        verify(clientAccountRepository, times(1)).save(clientAccount);
+        assertThat(clientAccount.getR1MinimumBalance()).isNotNull();
+        assertThat(clientAccount.getR4BalanceYearsOfAccountRelation()).isNotNull();
     }
 
     @Test

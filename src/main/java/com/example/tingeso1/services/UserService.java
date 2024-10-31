@@ -18,10 +18,6 @@ public class UserService {
         return (ArrayList<User>) userRepository.findAll();
     }
 
-    public User saveUser(User user){
-        return userRepository.save(user);
-    }
-
     public User getUserById(Long id){
         return userRepository.findById(id).get();
     }
@@ -32,10 +28,6 @@ public class UserService {
     
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email);
-    }
-
-    public User updateUser(User user) {
-        return userRepository.save(user);
     }
 
     public boolean deleteUser(Long id) throws Exception {

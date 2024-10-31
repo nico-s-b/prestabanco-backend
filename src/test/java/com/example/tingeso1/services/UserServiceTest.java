@@ -52,22 +52,6 @@ public class UserServiceTest {
     }
 
     @Test
-    void testSaveUser() {
-        //Given
-        User user = new User();
-
-        when(userRepository.save(user)).thenReturn(user);
-
-        //When
-        User result = userService.saveUser(user);
-
-        //Then
-        assertNotNull(result);
-        assertEquals(user, result);
-        verify(userRepository, times(1)).save(user);
-    }
-
-    @Test
     void testGetUserById() {
         //Given
         User user = new User();
@@ -119,23 +103,6 @@ public class UserServiceTest {
         assertNotNull(result);
         assertEquals(user, result);
         verify(userRepository, times(1)).findByEmail(email);
-    }
-
-    @Test
-    void testUpdateUser() {
-        //Given
-        User user = new User();
-        user.setId(1L);
-
-        when(userRepository.save(user)).thenReturn(user);
-
-        //When
-        User result = userService.updateUser(user);
-
-        //Then
-        assertNotNull(result);
-        assertEquals(user, result);
-        verify(userRepository, times(1)).save(user);
     }
 
     @Test

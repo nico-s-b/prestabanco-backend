@@ -2,12 +2,14 @@ package com.example.tingeso1.controllers;
 
 import java.util.List;
 
+import com.example.tingeso1.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.tingeso1.services.ClientAccountService;
 import com.example.tingeso1.entities.ClientAccount;
+import com.example.tingeso1.entities.Client;
 
 @RestController
 @RequestMapping("api/v1/accounts")
@@ -16,32 +18,55 @@ public class ClientAccountController {
     @Autowired
     ClientAccountService clientAccountService;
 
+    @Autowired
+    ClientService clientService;
+
     @GetMapping("/")
     public ResponseEntity<List<ClientAccount>> listClientAccounts() {
         List<ClientAccount> clientAccounts = clientAccountService.getClientAccounts();
         return ResponseEntity.ok(clientAccounts);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ClientAccount> getClientAccountById(@PathVariable Long id) {
-        ClientAccount clientAccount = clientAccountService.getClientAccountById(id);
-        if (clientAccount != null) {
-            return ResponseEntity.ok(clientAccount);
-        } else {
+    @PostMapping("/{clientId}/account")
+    public ResponseEntity<ClientAccount> createOrUpdateAccount(@PathVariable Long clientId, @RequestBody ClientAccount account) {
+        Client client = clientService.getClientById(clientId);
+        if (client == null) {
             return ResponseEntity.notFound().build();
+        }
+
+        ClientAccount existingAccount = client.getAccount();
+        // Update si existe cuenta, actualizar solo info del cliente
+        if (existingAccount != null) {
+            existingAccount.setAccountBalance(account.getAccountBalance());
+            existingAccount.setStartDate(account.getStartDate());
+
+            existingAccount.setR1MinimumBalance(existingAccount.getR1MinimumBalance());
+            existingAccount.setR2ConsistentSaves(existingAccount.getR2ConsistentSaves());
+            existingAccount.setR3PeriodicDeposits(existingAccount.getR3PeriodicDeposits());
+            existingAccount.setR4BalanceYearsOfAccountRelation(existingAccount.getR4BalanceYearsOfAccountRelation());
+            existingAccount.setR5RecentWithdrawals(existingAccount.getR5RecentWithdrawals());
+            existingAccount.setSaveCapacityStatus(existingAccount.getSaveCapacityStatus());
+
+            ClientAccount updatedAccount = clientAccountService.updateClientAccount(existingAccount);
+            return ResponseEntity.ok(updatedAccount);
+        } else {
+            //Create si no existe cuenta
+            account.setClient(client);
+            ClientAccount savedAccount = clientAccountService.saveClientAccount(account);
+            return ResponseEntity.ok(savedAccount);
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ClientAccount> saveClientAccount(@RequestBody ClientAccount clientAccount) {
-        ClientAccount clientAccountNew = clientAccountService.saveClientAccount(clientAccount);
-        return ResponseEntity.ok(clientAccountNew);
-    }
 
-    @PutMapping("/")
-    public ResponseEntity<ClientAccount> updateClientAccount(@RequestBody ClientAccount clientAccount) {
-        ClientAccount clientAccountUpdated = clientAccountService.updateClientAccount(clientAccount);
-        return ResponseEntity.ok(clientAccountUpdated);
+    @GetMapping("/{clientId}")
+    public ResponseEntity<ClientAccount> getAccountByClient(@PathVariable Long clientId) {
+        Client client = clientService.getClientById(clientId);
+        if (client != null) {
+            ClientAccount account = clientAccountService.getClientAccountByClient(client);
+            return ResponseEntity.ok(account);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

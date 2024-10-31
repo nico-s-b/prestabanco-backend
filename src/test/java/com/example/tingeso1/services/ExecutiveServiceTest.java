@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -54,6 +55,25 @@ public class ExecutiveServiceTest {
         assertEquals(mockUsers, result);
 
         verify(executiveRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetExecutiveById() {
+        // Given
+        Long id = 1L;
+        Executive executive = new Executive();
+        executive.setId(id);
+
+        // Mock behavior
+        when(executiveRepository.findById(id)).thenReturn(Optional.of(executive));
+
+        // When
+        Executive result = executiveService.getExecutiveById(id);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(executive, result);
+        verify(executiveRepository, times(1)).findById(id);
     }
 
     @Test

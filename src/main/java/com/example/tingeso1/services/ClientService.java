@@ -20,6 +20,18 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
+    public Client saveClient(Client client){
+        return clientRepository.save(client);
+    }
+
+    public Client getClientById(Long id){
+        return clientRepository.findById(id).get();
+    }
+
+    public List<Credit> getClientRequest(Client client) {
+        return client.getCredits();
+    }
+
     public void addCreditRequest(Client client, Credit credit) {
         credit.setClient(client);
         client.getCredits().add(credit);

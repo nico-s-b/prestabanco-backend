@@ -1,14 +1,12 @@
 package com.example.tingeso1.services;
 
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 
+import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.entities.Credit;
-import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.enums.SaveCapacityStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.support.NullValue;
 import org.springframework.stereotype.Service;
 
 import com.example.tingeso1.entities.ClientAccount;
@@ -22,6 +20,10 @@ public class ClientAccountService {
 
     public ArrayList<ClientAccount> getClientAccounts(){
         return (ArrayList<ClientAccount>) clientAccountRepository.findAll();
+    }
+
+    public ClientAccount getClientAccountByClient(Client client) {
+        return clientAccountRepository.findByClient(client);
     }
 
     public ClientAccount saveClientAccount(ClientAccount clientAccount){
@@ -58,6 +60,17 @@ public class ClientAccountService {
         }else{
             clientAccount.setR4BalanceYearsOfAccountRelation(clientAccount.getAccountBalance() >= credit.getCreditMount()*0.1);
         }
+    }
+
+    //Evaluar reglas para un crédito dado.
+    public void evaluateAccountCreditRules(Credit credit) {
+        ClientAccount clientAccount = credit.getClient().getAccount();
+
+        hasR1MinimumBalance(clientAccount, credit);
+
+        hasR4GoodBalanceYearsRelation(credit, clientAccount);
+
+        updateClientAccount(clientAccount);
     }
 
     //Verifica cuántas reglas cumple el cliente

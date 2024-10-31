@@ -23,8 +23,8 @@ public class User {
 
     private String rut;
     private String name;
-    private String pLastName;
-    private String mLastName;
+    private String paternalLastname;
+    private String maternalLastname;
     private String email;
     private String phone;
     private ZonedDateTime birthDate;

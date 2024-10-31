@@ -2,6 +2,8 @@ package com.example.tingeso1.controllers;
 
 import java.util.List;
 
+import com.example.tingeso1.entities.Client;
+import com.example.tingeso1.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ import com.example.tingeso1.entities.ClientEmploymentRecord;
 public class ClientEmploymentRecordController {
     @Autowired
     ClientEmploymentRecordService clientEmploymentRecordService;
+
+    @Autowired
+    ClientService clientService;
 
     @GetMapping("/")
     public ResponseEntity<List<ClientEmploymentRecord>> listClientEmploymentRecords() {
@@ -32,16 +37,34 @@ public class ClientEmploymentRecordController {
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ClientEmploymentRecord> saveClientEmploymentRecord(@RequestBody ClientEmploymentRecord clientEmploymentRecord) {
-        ClientEmploymentRecord clientEmploymentRecordNew = clientEmploymentRecordService.saveClientEmploymentRecord(clientEmploymentRecord);
-        return ResponseEntity.ok(clientEmploymentRecordNew);
+    @PostMapping("/{clientId}")
+    public ResponseEntity<ClientEmploymentRecord> createEmploymentRecord(@PathVariable Long clientId, @RequestBody ClientEmploymentRecord employmentRecord) {
+        Client client = clientService.getClientById(clientId);
+        if (client != null) {
+            employmentRecord.setClient(client);
+            ClientEmploymentRecord savedRecord = clientEmploymentRecordService.saveClientEmploymentRecord(employmentRecord);
+            return ResponseEntity.ok(savedRecord);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/")
-    public ResponseEntity<ClientEmploymentRecord> updateClientEmploymentRecord(@RequestBody ClientEmploymentRecord clientEmploymentRecord) {
-        ClientEmploymentRecord clientEmploymentRecordUpdated = clientEmploymentRecordService.updateClientEmploymentRecord(clientEmploymentRecord);
-        return ResponseEntity.ok(clientEmploymentRecordUpdated);
+    @PutMapping("/{clientId}/{recordId}")
+    public ResponseEntity<ClientEmploymentRecord> updateClientEmploymentRecord(@PathVariable Long clientId, @PathVariable Long recordId, @RequestBody ClientEmploymentRecord employmentRecord) {
+        Client client = clientService.getClientById(clientId);
+        if (client != null) {
+            ClientEmploymentRecord existingRecord = clientEmploymentRecordService.getClientEmploymentRecordById(recordId);
+            if (existingRecord != null) {
+                employmentRecord.setId(recordId);
+                employmentRecord.setClient(client);
+                ClientEmploymentRecord updatedRecord = clientEmploymentRecordService.updateClientEmploymentRecord(employmentRecord);
+                return ResponseEntity.ok(updatedRecord);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")

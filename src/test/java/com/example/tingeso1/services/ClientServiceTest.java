@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ public class ClientServiceTest {
     }
 
     @Test
-    void testGetUsers() {
+    void testGetClients() {
         //Given
         Client client1 = new Client();
         Client client2 = new Client();
@@ -53,6 +54,43 @@ public class ClientServiceTest {
         assertEquals(mockUsers, result);
 
         verify(clientRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetClientById() {
+        // Given
+        Long id = 1L;
+        Client client = new Client();
+        client.setId(id);
+
+        // Mock behavior
+        when(clientRepository.findById(id)).thenReturn(Optional.of(client));
+
+        // When
+        Client result = clientService.getClientById(id);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(client, result);
+        verify(clientRepository, times(1)).findById(id);
+    }
+
+    @Test
+    void testGetClientRequest() {
+        // Given
+        Client client = new Client();
+        Credit credit1 = new Credit();
+        Credit credit2 = new Credit();
+        List<Credit> credits = new ArrayList<>(Arrays.asList(credit1, credit2));
+        client.setCredits(credits);
+
+        // When
+        List<Credit> result = clientService.getClientRequest(client);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).containsExactly(credit1, credit2);
     }
 
     @Test

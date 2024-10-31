@@ -28,6 +28,9 @@ public class CreditServiceTest {
     @Mock
     private CreditRepository creditRepository;
 
+    @Mock
+    private DocumentService documentService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -137,6 +140,74 @@ public class CreditServiceTest {
         //Then
         assertEquals("Error al eliminar", exception.getMessage());
         verify(creditRepository, times(1)).deleteById(id);
+    }
+
+    @Test
+    void testVerifyCreditRequest_SECONDHOME() {
+        //Given
+        Credit credit = new Credit();
+        credit.setLoanPeriod(10);
+        credit.setPropertyValue(1000);
+        credit.setCreditMount(490);
+        credit.setCreditType(CreditType.SECONDHOME);
+
+        when(documentService.whichMissingDocuments(credit)).thenReturn(new ArrayList<>());
+
+        //When
+        boolean result = creditService.verifyCreditRequest(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void testVerifyCreditRequest_COMERCIAL() {
+        //Given
+        Credit credit = new Credit();
+        credit.setLoanPeriod(10);
+        credit.setPropertyValue(1000);
+        credit.setCreditMount(490);
+        credit.setCreditType(CreditType.COMERCIAL);
+
+        when(documentService.whichMissingDocuments(credit)).thenReturn(new ArrayList<>());
+
+        //When
+        boolean result = creditService.verifyCreditRequest(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void testVerifyCreditRequest_REMODELING() {
+        //Given
+        Credit credit = new Credit();
+        credit.setLoanPeriod(10);
+        credit.setPropertyValue(1000);
+        credit.setCreditMount(490);
+        credit.setCreditType(CreditType.REMODELING);
+
+        when(documentService.whichMissingDocuments(credit)).thenReturn(new ArrayList<>());
+
+        //When
+        boolean result = creditService.verifyCreditRequest(credit);
+
+        assertTrue(result);
+    }
+
+    @Test
+    void testVerifyCreditRequest_FIRSTHOME_fail() {
+        //Given
+        Credit credit = new Credit();
+        credit.setLoanPeriod(40);
+        credit.setPropertyValue(1000);
+        credit.setCreditMount(490);
+        credit.setCreditType(CreditType.FIRSTHOME);
+
+        when(documentService.whichMissingDocuments(credit)).thenReturn(new ArrayList<>());
+
+        //When
+        boolean result = creditService.verifyCreditRequest(credit);
+
+        assertFalse(result);
     }
 
     @Test

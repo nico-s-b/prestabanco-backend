@@ -32,18 +32,6 @@ public class UserController {
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
-        User userNew = userService.saveUser(user);
-        return ResponseEntity.ok(userNew);
-    }
-
-    @PutMapping("/")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
-        User userUpdated = userService.updateUser(user);
-        return ResponseEntity.ok(userUpdated);
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) throws Exception {
         var isDeleted = userService.deleteUser(id);
