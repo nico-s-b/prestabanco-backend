@@ -32,13 +32,13 @@ pipeline {
                 }
             }
         }
-        stage('Push image to Docker Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'docker-credentials', variable: 'dhpsw')]) {
-                        bat 'docker login -u nicolassepulvedab -p %dhpsw%'
-                   }
-                   bat 'docker push nicolassepulvedab/prestabanco-backend'
+        stage('Push image to Docker Hub') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                    }
+                    bat 'docker push nicolassepulvedab/prestabanco-backend'
                 }
             }
         }
