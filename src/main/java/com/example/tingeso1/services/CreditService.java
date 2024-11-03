@@ -140,7 +140,7 @@ public class CreditService {
             return false;
         }
         int creditMount = credit.getCreditMount();
-        if (creditMount > getMaxLoanPeriod(credit)) {
+        if (creditMount > getMaxFinancingMount(credit)) {
             return false;
         }
         ArrayList<DocumentType> docs = documentService.whichMissingDocuments(credit);
