@@ -11,7 +11,7 @@ pipeline {
                     extensions: [], 
                     userRemoteConfigs: [[
                         url: 'https://github.com/nico-s-b/prestabanco-backend', 
-                        credentialsId: 'github-credentials'
+                        credentialsId: 'github-secret'
                     ]]
                 ])
                 bat 'mvn clean install'
