@@ -6,7 +6,14 @@ pipeline {
     stages{
         stage('Build maven'){
             steps{
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/nico-s-b/prestabanco-backend']])
+               checkout([$class: 'GitSCM', 
+                    branches: [[name: '*/main']], 
+                    extensions: [], 
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/nico-s-b/prestabanco-backend', 
+                        credentialsId: 'githun-credentials'
+                    ]]
+                ])
                 bat 'mvn clean install'
             }
         }
