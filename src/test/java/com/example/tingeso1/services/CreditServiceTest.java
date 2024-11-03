@@ -143,6 +143,120 @@ public class CreditServiceTest {
     }
 
     @Test
+    void testVerifyMaxFinancingMount() {
+        //Given
+        Credit credit1 = new Credit();
+        Credit credit2 = new Credit();
+        Credit credit3 = new Credit();
+        Credit credit4 = new Credit();
+
+        credit1.setCreditMount(80);
+        credit2.setCreditMount(70);
+        credit3.setCreditMount(60);
+        credit4.setCreditMount(50);
+
+        credit1.setCreditType(CreditType.FIRSTHOME);
+        credit2.setCreditType(CreditType.SECONDHOME);
+        credit3.setCreditType(CreditType.COMERCIAL);
+        credit4.setCreditType(CreditType.REMODELING);
+
+        credit1.setPropertyValue(100);
+        credit2.setPropertyValue(100);
+        credit3.setPropertyValue(100);
+        credit4.setPropertyValue(100);
+
+        //When
+        boolean result1 = creditService.verifyMaxFinancingMount(credit1);
+        boolean result2 = creditService.verifyMaxFinancingMount(credit2);
+        boolean result3 = creditService.verifyMaxFinancingMount(credit3);
+        boolean result4 = creditService.verifyMaxFinancingMount(credit4);
+
+        //Then
+        assertTrue(result1);
+        assertTrue(result2);
+        assertTrue(result3);
+        assertTrue(result4);
+    }
+
+    @Test
+    public void testGetMaxFinancingMount() {
+        //Given
+        Credit credit1 = new Credit();
+        Credit credit2 = new Credit();
+        Credit credit3 = new Credit();
+        Credit credit4 = new Credit();
+        credit1.setCreditMount(80);
+        credit2.setCreditMount(70);
+        credit3.setCreditMount(60);
+        credit4.setCreditMount(50);
+        credit1.setCreditType(CreditType.FIRSTHOME);
+        credit2.setCreditType(CreditType.SECONDHOME);
+        credit3.setCreditType(CreditType.COMERCIAL);
+        credit4.setCreditType(CreditType.REMODELING);
+        credit1.setPropertyValue(100);
+        credit2.setPropertyValue(100);
+        credit3.setPropertyValue(100);
+        credit4.setPropertyValue(100);
+
+        //When
+        int result1 = creditService.getMaxFinancingMount(credit1);
+        int result2 = creditService.getMaxFinancingMount(credit2);
+        int result3 = creditService.getMaxFinancingMount(credit3);
+        int result4 = creditService.getMaxFinancingMount(credit4);
+
+        //Then
+        assertThat(result1).isEqualTo(80);
+        assertThat(result2).isEqualTo(70);
+        assertThat(result3).isEqualTo(60);
+        assertThat(result4).isEqualTo(50);
+    }
+
+    @Test
+    public void testGetMaxLoanPeriod() {
+        //Given
+        Credit credit1 = new Credit();
+        Credit credit2 = new Credit();
+        Credit credit3 = new Credit();
+        Credit credit4 = new Credit();
+        credit1.setCreditType(CreditType.FIRSTHOME);
+        credit2.setCreditType(CreditType.SECONDHOME);
+        credit3.setCreditType(CreditType.COMERCIAL);
+        credit4.setCreditType(CreditType.REMODELING);
+
+        //When
+        int period1 = creditService.getMaxLoanPeriod(credit1);
+        int period2 = creditService.getMaxLoanPeriod(credit2);
+        int period3 = creditService.getMaxLoanPeriod(credit3);
+        int period4 = creditService.getMaxLoanPeriod(credit4);
+
+        //Then
+        assertThat(period1).isEqualTo(30);
+        assertThat(period2).isEqualTo(20);
+        assertThat(period3).isEqualTo(25);
+        assertThat(period4).isEqualTo(15);
+
+    }
+
+    @Test
+    public void testVerify_defaultCases() {
+        Credit mockCredit = mock(Credit.class);
+
+        when(mockCredit.getCreditType()).thenReturn(null);
+
+        CreditService creditService = new CreditService();
+
+        assertThrows(IllegalStateException.class, () -> {
+            creditService.isCreditAmountLessThanMaxAmount(mockCredit);
+        });
+        assertThrows(IllegalStateException.class, () -> {
+            creditService.verifyMaxFinancingMount(mockCredit);
+        });
+        assertThrows(IllegalStateException.class, () -> {
+            creditService.verifyCreditRequest(mockCredit);
+        });
+    }
+
+    @Test
     void testVerifyCreditRequest_SECONDHOME() {
         //Given
         Credit credit = new Credit();
@@ -223,6 +337,56 @@ public class CreditServiceTest {
 
         //Then
         assertThat(montlhlyInstallment).isEqualTo(632649);
+    }
+
+    @Test
+    void testSetMaxAnnualRate() {
+        //Given
+        Credit credit1 = new Credit();
+        credit1.setCreditType(CreditType.FIRSTHOME);
+        Credit credit2 = new Credit();
+        credit2.setCreditType(CreditType.SECONDHOME);
+        Credit credit3 = new Credit();
+        credit3.setCreditType(CreditType.COMERCIAL);
+        Credit credit4 = new Credit();
+        credit4.setCreditType(CreditType.REMODELING);
+
+        //When
+        creditService.setMaxAnnualRate(credit1);
+        creditService.setMaxAnnualRate(credit2);
+        creditService.setMaxAnnualRate(credit3);
+        creditService.setMaxAnnualRate(credit4);
+
+        //Then
+        assertThat(credit1.getAnnualRate()).isEqualTo(5);
+        assertThat(credit2.getAnnualRate()).isEqualTo(6);
+        assertThat(credit3.getAnnualRate()).isEqualTo(7);
+        assertThat(credit4.getAnnualRate()).isEqualTo(6);
+    }
+
+    @Test
+    void testSetMinAnnualRate() {
+        //Given
+        Credit credit1 = new Credit();
+        credit1.setCreditType(CreditType.FIRSTHOME);
+        Credit credit2 = new Credit();
+        credit2.setCreditType(CreditType.SECONDHOME);
+        Credit credit3 = new Credit();
+        credit3.setCreditType(CreditType.COMERCIAL);
+        Credit credit4 = new Credit();
+        credit4.setCreditType(CreditType.REMODELING);
+
+        //When
+        creditService.setMinAnnualRate(credit1);
+        creditService.setMinAnnualRate(credit2);
+        creditService.setMinAnnualRate(credit3);
+        creditService.setMinAnnualRate(credit4);
+
+        //Then
+        assertThat(credit1.getAnnualRate()).isEqualTo(3.5F);
+        assertThat(credit2.getAnnualRate()).isEqualTo(4);
+        assertThat(credit3.getAnnualRate()).isEqualTo(5);
+        assertThat(credit4.getAnnualRate()).isEqualTo(4.5F);
     }
 
     @Test

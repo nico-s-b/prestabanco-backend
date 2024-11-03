@@ -25,8 +25,8 @@ public class ClientCreditRecord {
     private Client client;
 
     private int debtAmount;                 //Ingresado por cliente
-    private Boolean isSlowpayer;
-    private Boolean hasSeriousDebts;
     private ZonedDateTime lastDebtDate;
     private ZonedDateTime oldestUnpaidInstallmentDate;
+    private Boolean isSlowpayer;
+    private Boolean hasSeriousDebts;
 }

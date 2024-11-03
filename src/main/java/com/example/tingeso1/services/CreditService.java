@@ -47,29 +47,32 @@ public class CreditService {
         }
     }
 
-    public boolean verifyCreditRequest(Credit credit) {
-        int loanPeriod = credit.getLoanPeriod();
-        int creditMount = credit.getCreditMount();
-        int propertyValue = credit.getPropertyValue();
-        int financingPercentage = (creditMount / propertyValue)*100;
-        ArrayList<DocumentType> docs = documentService.whichMissingDocuments(credit);
-
-        switch (credit.getCreditType()){
-            case FIRSTHOME -> {
-                if (loanPeriod <= 30 && financingPercentage < 80 && docs.isEmpty()) return true;
-            }
-            case SECONDHOME -> {
-                if (loanPeriod <= 20 && financingPercentage < 70 && docs.isEmpty()) return true;
-            }
-            case COMERCIAL -> {
-                if (loanPeriod <= 25 && financingPercentage < 60 && docs.isEmpty()) return true;
-            }
-            case REMODELING -> {
-                if (loanPeriod <= 15 && financingPercentage < 50 && docs.isEmpty()) return true;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + credit.getCreditType());
+    public void setMaxAnnualRate(Credit credit){
+        if (credit.getCreditType() == CreditType.FIRSTHOME){
+            credit.setAnnualRate(5);
         }
-        return false;
+        else if (credit.getCreditType() == CreditType.SECONDHOME
+                || credit.getCreditType() == CreditType.REMODELING){
+            credit.setAnnualRate(6);
+        }
+        else if (credit.getCreditType() == CreditType.COMERCIAL) {
+            credit.setAnnualRate(7);
+        }
+    }
+
+    public void setMinAnnualRate(Credit credit){
+        if (credit.getCreditType() == CreditType.FIRSTHOME){
+            credit.setAnnualRate(3.5F);
+        }
+        else if (credit.getCreditType() == CreditType.SECONDHOME) {
+            credit.setAnnualRate(4);
+        }
+        else if (credit.getCreditType() == CreditType.COMERCIAL) {
+            credit.setAnnualRate(5);
+        }
+        else if (credit.getCreditType() == CreditType.REMODELING) {
+            credit.setAnnualRate(4.5F);
+        }
     }
 
     //Método para obtener la cuota mensual de un crédito dado sus parámetros
@@ -82,8 +85,77 @@ public class CreditService {
         return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
     }
 
+    public boolean verifyMaxFinancingMount(Credit credit){
+        if (credit.getCreditType() == null) {
+            throw new IllegalStateException("CreditType cannot be null");
+        }
+
+        int creditMount = credit.getCreditMount();
+        int propertyValue = credit.getPropertyValue();
+        int financingPercentage = (creditMount / propertyValue)*100;
+
+        switch (credit.getCreditType()){
+            case FIRSTHOME -> {
+                if (financingPercentage < 80) return true;
+            }
+            case SECONDHOME -> {
+                if (financingPercentage < 70) return true;
+            }
+            case COMERCIAL -> {
+                if (financingPercentage < 60) return true;
+            }
+            case REMODELING -> {
+                if (financingPercentage < 50) return true;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + credit.getCreditType());
+        }
+        return false;
+    }
+
+    public int getMaxFinancingMount(Credit credit) {
+        double percentage = switch (credit.getCreditType()) {
+            case FIRSTHOME -> 0.8;
+            case SECONDHOME -> 0.7;
+            case COMERCIAL -> 0.6;
+            case REMODELING -> 0.5;
+        };
+        return (int) (credit.getPropertyValue() * percentage);
+    }
+
+    public int getMaxLoanPeriod(Credit credit) {
+        return switch (credit.getCreditType()) {
+            case FIRSTHOME -> 30;
+            case SECONDHOME -> 20;
+            case COMERCIAL -> 25;
+            case REMODELING -> 15;
+        };
+    }
+
+    public boolean verifyCreditRequest(Credit credit) {
+        if (credit.getCreditType() == null) {
+            throw new IllegalStateException("CreditType cannot be null");
+        }
+        int loanPeriod = credit.getLoanPeriod();
+        if (loanPeriod > getMaxLoanPeriod(credit)) {
+            return false;
+        }
+        int creditMount = credit.getCreditMount();
+        if (creditMount > getMaxLoanPeriod(credit)) {
+            return false;
+        }
+        ArrayList<DocumentType> docs = documentService.whichMissingDocuments(credit);
+        if (!docs.isEmpty()) {
+            return false;
+        }
+        return true;
+    }
+
     //R5 Monto máximo de financiamiento
     public boolean isCreditAmountLessThanMaxAmount(Credit credit){
+        if (credit.getCreditType() == null) {
+            throw new IllegalStateException("CreditType cannot be null");
+        }
+
         switch (credit.getCreditType()){
             case FIRSTHOME -> {
                 return credit.getCreditMount() <= credit.getPropertyValue()*0.8;
