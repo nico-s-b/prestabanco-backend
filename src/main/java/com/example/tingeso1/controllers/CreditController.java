@@ -43,6 +43,15 @@ public class CreditController {
         }
     }
 
+    @GetMapping("/{clientId}/credits")
+    public ResponseEntity<List<Credit>> getClientCredits(@PathVariable Long clientId) {
+        List<Credit> credits = creditService.getCreditsById(clientId);
+        if (credits.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(credits);
+    }
+
     @PutMapping("/{creditId}")
     public ResponseEntity<Credit> updateCredit(@PathVariable Long creditId, @RequestBody Credit credit) {
         credit.setId(creditId);
@@ -58,6 +67,23 @@ public class CreditController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping("/simulate")
+    public ResponseEntity<List<Integer>> simulate(@RequestBody CreditRequest request) {
+        if (request.getCreditType() == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+
+        Credit credit = buildCredit(request);
+
+        creditService.setMaxAnnualRate(credit);
+        int maxInstallment = creditService.getCreditInstallment(credit);
+        creditService.setMinAnnualRate(credit);
+        int minInstallment = creditService.getCreditInstallment(credit);
+
+        List<Integer> installments = Arrays.asList(minInstallment, maxInstallment);
+        return ResponseEntity.ok(installments);
     }
 
     @PostMapping("/request")
@@ -93,22 +119,6 @@ public class CreditController {
         return ResponseEntity.ok(creditChecked);
     }
 
-    @PostMapping("/simulate")
-    public ResponseEntity<List<Integer>> simulate(@RequestBody CreditRequest request) {
-        if (request.getCreditType() == null) {
-            return ResponseEntity.badRequest().body(null);
-        }
-
-        Credit credit = buildCredit(request);
-
-        creditService.setMaxAnnualRate(credit);
-        int maxInstallment = creditService.getCreditInstallment(credit);
-        creditService.setMinAnnualRate(credit);
-        int minInstallment = creditService.getCreditInstallment(credit);
-
-        List<Integer> installments = Arrays.asList(minInstallment, maxInstallment);
-        return ResponseEntity.ok(installments);
-    }
 
     @GetMapping("/restrictions")
     public ResponseEntity<Map<String, Integer>> getRestrictions(

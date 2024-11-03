@@ -34,6 +34,10 @@ public class CreditService {
         return creditRepository.findById(id).get();
     }
 
+    public ArrayList<Credit>  getCreditsById(Long id){
+        return (ArrayList<Credit>) creditRepository.findAllByClientId(id);
+    }
+
     public Credit updateCredit(Credit credit) {
         return creditRepository.save(credit);
     }

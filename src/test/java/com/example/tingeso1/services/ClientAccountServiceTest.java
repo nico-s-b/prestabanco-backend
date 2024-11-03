@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -97,15 +96,15 @@ public class ClientAccountServiceTest {
         ClientAccount account = new ClientAccount();
         Client client = new Client();
 
-        when(clientAccountRepository.findByClient(client)).thenReturn(account);
+        when(clientAccountRepository.findByClientId(client.getId())).thenReturn(account);
 
         //When
-        ClientAccount result = clientAccountService.getClientAccountByClient(client);
+        ClientAccount result = clientAccountService.getClientAccountByClient(client.getId());
 
         //Then
         assertNotNull(result);
         assertEquals(account, result);
-        verify(clientAccountRepository, times(1)).findByClient(client);
+        verify(clientAccountRepository, times(1)).findByClientId(client.getId());
     }
 
     @Test

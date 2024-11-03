@@ -1,5 +1,6 @@
 package com.example.tingeso1.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,14 @@ public class Credit {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="client_id", nullable=false)
     private Client client;
 
+    @JsonBackReference
     @ManyToOne
-    @JoinColumn(name = "executive_id", nullable = false)
+    @JoinColumn(name = "executive_id")
     private Executive executive;
 
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL)

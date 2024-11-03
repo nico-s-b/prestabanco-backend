@@ -38,6 +38,7 @@ public class LoginController {
             String token = jwtUtil.generateToken(user.getEmail());
             Map<String, String> response = new HashMap<>();
             response.put("token", token);
+            response.put("userId", String.valueOf(user.getId()));
             response.put("userType", user instanceof Client ? "CLIENT" : "EXECUTIVE");
             response.put("name", user.getName());
             return ResponseEntity.ok(response);

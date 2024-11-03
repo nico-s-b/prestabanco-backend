@@ -22,8 +22,8 @@ public class ClientAccountService {
         return (ArrayList<ClientAccount>) clientAccountRepository.findAll();
     }
 
-    public ClientAccount getClientAccountByClient(Client client) {
-        return clientAccountRepository.findByClient(client);
+    public ClientAccount getClientAccountByClient(Long id) {
+        return clientAccountRepository.findByClientId(id);
     }
 
     public ClientAccount saveClientAccount(ClientAccount clientAccount){

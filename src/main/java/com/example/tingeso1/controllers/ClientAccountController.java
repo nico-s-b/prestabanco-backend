@@ -62,7 +62,7 @@ public class ClientAccountController {
     public ResponseEntity<ClientAccount> getAccountByClient(@PathVariable Long clientId) {
         Client client = clientService.getClientById(clientId);
         if (client != null) {
-            ClientAccount account = clientAccountService.getClientAccountByClient(client);
+            ClientAccount account = clientAccountService.getClientAccountByClient(clientId);
             return ResponseEntity.ok(account);
         } else {
             return ResponseEntity.notFound().build();

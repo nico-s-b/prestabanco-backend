@@ -1,5 +1,6 @@
 package com.example.tingeso1.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Executive extends User{
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "executive", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
 
