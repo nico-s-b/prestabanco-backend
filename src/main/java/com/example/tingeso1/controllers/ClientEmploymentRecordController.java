@@ -37,34 +37,24 @@ public class ClientEmploymentRecordController {
         }
     }
 
-    @PostMapping("/{clientId}")
-    public ResponseEntity<ClientEmploymentRecord> createEmploymentRecord(@PathVariable Long clientId, @RequestBody ClientEmploymentRecord employmentRecord) {
-        Client client = clientService.getClientById(clientId);
-        if (client != null) {
-            employmentRecord.setClient(client);
-            ClientEmploymentRecord savedRecord = clientEmploymentRecordService.saveClientEmploymentRecord(employmentRecord);
-            return ResponseEntity.ok(savedRecord);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    @PutMapping("/{clientId}")
+    public ResponseEntity<ClientEmploymentRecord> createOrUpdateEmploymentRecord(
+            @PathVariable Long clientId,
+            @RequestBody ClientEmploymentRecord employmentRecord) {
 
-    @PutMapping("/{clientId}/{recordId}")
-    public ResponseEntity<ClientEmploymentRecord> updateClientEmploymentRecord(@PathVariable Long clientId, @PathVariable Long recordId, @RequestBody ClientEmploymentRecord employmentRecord) {
         Client client = clientService.getClientById(clientId);
-        if (client != null) {
-            ClientEmploymentRecord existingRecord = clientEmploymentRecordService.getClientEmploymentRecordById(recordId);
-            if (existingRecord != null) {
-                employmentRecord.setId(recordId);
-                employmentRecord.setClient(client);
-                ClientEmploymentRecord updatedRecord = clientEmploymentRecordService.updateClientEmploymentRecord(employmentRecord);
-                return ResponseEntity.ok(updatedRecord);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
+        if (client == null) {
             return ResponseEntity.notFound().build();
         }
+
+        ClientEmploymentRecord existingRecord = clientEmploymentRecordService.getClientEmploymentRecordById(clientId);
+        if (existingRecord != null) {
+            employmentRecord.setId(existingRecord.getId());
+        }
+
+        employmentRecord.setClient(client);
+        ClientEmploymentRecord savedRecord = clientEmploymentRecordService.saveClientEmploymentRecord(employmentRecord);
+        return ResponseEntity.ok(savedRecord);
     }
 
     @DeleteMapping("/{id}")

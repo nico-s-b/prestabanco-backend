@@ -27,8 +27,8 @@ public class ClientEmploymentRecord {
     private Client client;
 
     private Boolean isWorking;
-    private ZonedDateTime currentWorkStartDate;
     private Boolean isEmployee;
+    private ZonedDateTime currentWorkStartDate;
     private int monthlyIncome;
     private int lastTwoYearIncome;
 }

@@ -90,23 +90,6 @@ public class ClientEmploymentRecordServiceTest {
     }
 
     @Test
-    void testUpdateClientEmploymentRecord() {
-        //Given
-        ClientEmploymentRecord record = new ClientEmploymentRecord();
-        record.setId(1L);
-
-        when(clientEmploymentRecordRepository.save(record)).thenReturn(record);
-
-        //When
-        ClientEmploymentRecord result = employmentRecordService.updateClientEmploymentRecord(record);
-
-        //Then
-        assertNotNull(result);
-        assertEquals(record, result);
-        verify(clientEmploymentRecordRepository, times(1)).save(record);
-    }
-
-    @Test
     void testDeleteClientEmploymentRecord_Success()  throws Exception {
         //Given
         Long id = 1L;

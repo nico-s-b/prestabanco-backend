@@ -37,34 +37,24 @@ public class ClientCreditRecordController {
         }
     }
 
-    @PostMapping("/{clientId}")
-    public ResponseEntity<ClientCreditRecord> createCreditRecord(@PathVariable Long clientId, @RequestBody ClientCreditRecord creditRecord) {
-        Client client = clientService.getClientById(clientId);
-        if (client != null) {
-            creditRecord.setClient(client);
-            ClientCreditRecord savedRecord = clientCreditRecordService.saveClientCreditRecord(creditRecord);
-            return ResponseEntity.ok(savedRecord);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
+    @PutMapping("/{clientId}")
+    public ResponseEntity<ClientCreditRecord> createOrUpdateClientCreditRecord(
+            @PathVariable Long clientId,
+            @RequestBody ClientCreditRecord creditRecord) {
 
-    @PutMapping("/{clientId}/{recordId}")
-    public ResponseEntity<ClientCreditRecord> updateClientCreditRecord(@PathVariable Long clientId, @PathVariable Long recordId, @RequestBody ClientCreditRecord creditRecord) {
         Client client = clientService.getClientById(clientId);
-        if (client != null) {
-            ClientCreditRecord existingRecord = clientCreditRecordService.getClientCreditRecordById(recordId);
-            if (existingRecord != null) {
-                creditRecord.setId(recordId);
-                creditRecord.setClient(client);
-                ClientCreditRecord updatedRecord = clientCreditRecordService.updateClientCreditRecord(creditRecord);
-                return ResponseEntity.ok(updatedRecord);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } else {
+        if (client == null) {
             return ResponseEntity.notFound().build();
         }
+
+        ClientCreditRecord existingRecord = clientCreditRecordService.getClientCreditRecordById(clientId);
+        if (existingRecord != null) {
+            creditRecord.setId(existingRecord.getId());
+        }
+
+        creditRecord.setClient(client);
+        ClientCreditRecord savedRecord = clientCreditRecordService.saveClientCreditRecord(creditRecord);
+        return ResponseEntity.ok(savedRecord);
     }
 
     @DeleteMapping("/{id}")

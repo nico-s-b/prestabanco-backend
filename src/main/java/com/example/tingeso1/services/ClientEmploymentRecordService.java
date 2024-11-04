@@ -3,8 +3,11 @@ package com.example.tingeso1.services;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Optional;
 
+import com.example.tingeso1.entities.ClientCreditRecord;
 import com.example.tingeso1.entities.Credit;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +32,10 @@ public class ClientEmploymentRecordService {
     }
 
     public ClientEmploymentRecord getClientEmploymentRecordById(Long id){
-        return clientEmploymentRecordRepository.findById(id).get();
+        Optional<ClientEmploymentRecord> optionalRecord = clientEmploymentRecordRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("ClientEmploymentRecord not found for this id :: " + id));
     }
 
-    public ClientEmploymentRecord updateClientEmploymentRecord(ClientEmploymentRecord clientEmploymentRecord) {
-        return clientEmploymentRecordRepository.save(clientEmploymentRecord);
-    }
 
     public boolean deleteClientEmploymentRecord(Long id) throws Exception {
         try{

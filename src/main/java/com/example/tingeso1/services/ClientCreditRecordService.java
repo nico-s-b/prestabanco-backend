@@ -1,9 +1,11 @@
 package com.example.tingeso1.services;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.example.tingeso1.entities.ClientEmploymentRecord;
 import com.example.tingeso1.entities.Credit;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +31,8 @@ public class ClientCreditRecordService {
     }
 
     public ClientCreditRecord getClientCreditRecordById(Long id){
-        return clientCreditRecordRepository.findById(id).get();
-    }
-
-    public ClientCreditRecord updateClientCreditRecord(ClientCreditRecord clientCreditRecord) {
-        return clientCreditRecordRepository.save(clientCreditRecord);
+        Optional<ClientCreditRecord> optionalRecord = clientCreditRecordRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("ClientCreditRecord not found for this id :: " + id));
     }
 
     public boolean deleteClientCreditRecord(Long id) throws Exception {

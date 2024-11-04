@@ -24,6 +24,18 @@ public class ClientController {
 
     @PostMapping("/")
     public ResponseEntity<Client> registerClient(@RequestBody Client client) {
+        ClientAccount newAccount = new ClientAccount();
+        newAccount.setClient(client);
+        client.setAccount(newAccount);
+
+        ClientEmploymentRecord newEmploymentRecord = new ClientEmploymentRecord();
+        newEmploymentRecord.setClient(client);
+        client.setEmploymentRecord(newEmploymentRecord);
+
+        ClientCreditRecord newCreditRecord = new ClientCreditRecord();
+        newCreditRecord.setClient(client);
+        client.setCreditRecord(newCreditRecord);
+
         Client savedClient = clientService.saveClient(client);
         return ResponseEntity.ok(savedClient);
     }

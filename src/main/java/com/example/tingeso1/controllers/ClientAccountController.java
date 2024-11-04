@@ -27,34 +27,24 @@ public class ClientAccountController {
         return ResponseEntity.ok(clientAccounts);
     }
 
-    @PostMapping("/{clientId}/account")
-    public ResponseEntity<ClientAccount> createOrUpdateAccount(@PathVariable Long clientId, @RequestBody ClientAccount account) {
+    @PutMapping("/{clientId}")
+    public ResponseEntity<ClientAccount> createOrUpdateAccount(
+            @PathVariable Long clientId,
+            @RequestBody ClientAccount clientAccount) {
+
         Client client = clientService.getClientById(clientId);
         if (client == null) {
             return ResponseEntity.notFound().build();
         }
 
-        ClientAccount existingAccount = client.getAccount();
-        // Update si existe cuenta, actualizar solo info del cliente
-        if (existingAccount != null) {
-            existingAccount.setAccountBalance(account.getAccountBalance());
-            existingAccount.setStartDate(account.getStartDate());
-
-            existingAccount.setR1MinimumBalance(existingAccount.getR1MinimumBalance());
-            existingAccount.setR2ConsistentSaves(existingAccount.getR2ConsistentSaves());
-            existingAccount.setR3PeriodicDeposits(existingAccount.getR3PeriodicDeposits());
-            existingAccount.setR4BalanceYearsOfAccountRelation(existingAccount.getR4BalanceYearsOfAccountRelation());
-            existingAccount.setR5RecentWithdrawals(existingAccount.getR5RecentWithdrawals());
-            existingAccount.setSaveCapacityStatus(existingAccount.getSaveCapacityStatus());
-
-            ClientAccount updatedAccount = clientAccountService.updateClientAccount(existingAccount);
-            return ResponseEntity.ok(updatedAccount);
-        } else {
-            //Create si no existe cuenta
-            account.setClient(client);
-            ClientAccount savedAccount = clientAccountService.saveClientAccount(account);
-            return ResponseEntity.ok(savedAccount);
+        ClientAccount existingRecord = clientAccountService.getClientAccountByClient(clientId);
+        if (existingRecord != null) {
+            clientAccount.setId(existingRecord.getId());
         }
+
+        clientAccount.setClient(client);
+        ClientAccount savedRecord = clientAccountService.saveClientAccount(clientAccount);
+        return ResponseEntity.ok(savedRecord);
     }
 
 

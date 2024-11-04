@@ -2,10 +2,13 @@ package com.example.tingeso1.services;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.example.tingeso1.entities.Client;
+import com.example.tingeso1.entities.ClientEmploymentRecord;
 import com.example.tingeso1.entities.Credit;
 import com.example.tingeso1.enums.SaveCapacityStatus;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,11 +34,8 @@ public class ClientAccountService {
     }
 
     public ClientAccount getClientAccountById(Long id){
-        return clientAccountRepository.findById(id).get();
-    }
-
-    public ClientAccount updateClientAccount(ClientAccount clientAccount) {
-        return clientAccountRepository.save(clientAccount);
+        Optional<ClientAccount> optionalRecord = clientAccountRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("ClientAccount not found for this id :: " + id));
     }
 
     public boolean deleteClientAccount(Long id) throws Exception {
@@ -70,7 +70,7 @@ public class ClientAccountService {
 
         hasR4GoodBalanceYearsRelation(credit, clientAccount);
 
-        updateClientAccount(clientAccount);
+        saveClientAccount(clientAccount);
     }
 
     //Verifica cuántas reglas cumple el cliente

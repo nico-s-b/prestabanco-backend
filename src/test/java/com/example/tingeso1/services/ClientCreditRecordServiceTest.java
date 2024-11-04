@@ -95,23 +95,6 @@ public class ClientCreditRecordServiceTest {
     }
 
     @Test
-    void testUpdateClientCreditRecord() {
-        //Given
-        ClientCreditRecord record = new ClientCreditRecord();
-        record.setId(1L);
-
-        when(clientCreditRecordRepository.save(record)).thenReturn(record);
-
-        //When
-        ClientCreditRecord result = clientCreditRecordService.updateClientCreditRecord(record);
-
-        //Then
-        assertNotNull(result);
-        assertEquals(record, result);
-        verify(clientCreditRecordRepository, times(1)).save(record);
-    }
-
-    @Test
     void testDeleteClientCreditRecord_Success() throws Exception {
         //Given
         Long id = 1L;

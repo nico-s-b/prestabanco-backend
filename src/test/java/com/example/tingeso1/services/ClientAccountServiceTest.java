@@ -108,23 +108,6 @@ public class ClientAccountServiceTest {
     }
 
     @Test
-    void testUpdateClientAccount() {
-        //Given
-        ClientAccount account = new ClientAccount();
-        account.setId(1L);
-
-        when(clientAccountRepository.save(account)).thenReturn(account);
-
-        //When
-        ClientAccount result = clientAccountService.updateClientAccount(account);
-
-        //Then
-        assertNotNull(result);
-        assertEquals(account, result);
-        verify(clientAccountRepository, times(1)).save(account);
-    }
-
-    @Test
     void testDeleteClientAccount_Success() throws Exception {
         //Given
         Long id = 1L;
