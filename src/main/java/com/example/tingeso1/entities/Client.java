@@ -19,17 +19,17 @@ import jakarta.persistence.*;
 @AllArgsConstructor
 public class Client extends User{
 
-    @JsonBackReference
+    @JsonBackReference(value = "account-client")
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private ClientAccount account;
 
-    @JsonBackReference
+    @JsonBackReference(value = "record-client")
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private ClientCreditRecord creditRecord;
 
-    @JsonBackReference
+    @JsonBackReference(value = "employment-client")
     @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private ClientEmploymentRecord employmentRecord;

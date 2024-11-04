@@ -20,7 +20,7 @@ public class ClientEmploymentRecord {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "employment-client")
     @OneToOne
     @MapsId
     @JoinColumn(name = "client_id")

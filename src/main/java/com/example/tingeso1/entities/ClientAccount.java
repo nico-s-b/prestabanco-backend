@@ -22,7 +22,7 @@ public class ClientAccount {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "account-client")
     @OneToOne
     @MapsId
     @JoinColumn(name = "client_id")

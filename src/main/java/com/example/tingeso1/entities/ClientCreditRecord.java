@@ -20,7 +20,7 @@ public class ClientCreditRecord {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "record-client")
     @OneToOne
     @MapsId
     @JoinColumn(name = "client_id")
