@@ -4,6 +4,7 @@
  */
 package com.example.tingeso1.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class DocumentEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name="credit_id", nullable=true)
     private Credit credit;

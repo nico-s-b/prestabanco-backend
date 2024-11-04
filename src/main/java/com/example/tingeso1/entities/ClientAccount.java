@@ -1,6 +1,7 @@
 package com.example.tingeso1.entities;
 
 import com.example.tingeso1.enums.SaveCapacityStatus;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,10 @@ public class ClientAccount {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @OneToOne(mappedBy = "account")
+    @JsonManagedReference
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "client_id")
     private Client client;
 
     private int accountBalance;

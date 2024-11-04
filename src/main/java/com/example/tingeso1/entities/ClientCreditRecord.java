@@ -1,5 +1,6 @@
 package com.example.tingeso1.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ public class ClientCreditRecord {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    @JsonManagedReference
     @OneToOne
     @MapsId
     @JoinColumn(name = "client_id")

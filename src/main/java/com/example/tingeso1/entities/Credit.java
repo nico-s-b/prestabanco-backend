@@ -1,6 +1,7 @@
 package com.example.tingeso1.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,22 +35,22 @@ public class Credit {
     @JoinColumn(name = "executive_id")
     private Executive executive;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL)
     private List<DocumentEntity> documents;
 
     @Enumerated(EnumType.STRING)
     private CreditType creditType;
-    
+
+    @Enumerated(EnumType.STRING)
+    private CreditState state;
+
     private int loanPeriod;
     private float annualRate;
     private int creditMount;
     private int propertyValue;
     private int totalCost;
     private Boolean isSimulation;
-    
-    @Enumerated(EnumType.STRING)
-    private CreditState state;
-    
     private ZonedDateTime requestDate;
     private ZonedDateTime lastUpdateDate;
 }
