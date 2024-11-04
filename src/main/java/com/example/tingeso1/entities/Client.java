@@ -20,8 +20,8 @@ import jakarta.persistence.*;
 public class Client extends User{
 
     @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private ClientAccount account;
 
     @JsonBackReference
