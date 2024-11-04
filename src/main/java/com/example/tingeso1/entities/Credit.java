@@ -50,7 +50,6 @@ public class Credit {
     private int creditMount;
     private int propertyValue;
     private int totalCost;
-    private Boolean isSimulation;
     private ZonedDateTime requestDate;
     private ZonedDateTime lastUpdateDate;
 }
