@@ -26,7 +26,7 @@ public class DocumentEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @JsonBackReference
+    @JsonBackReference(value = "credit-docs")
     @ManyToOne
     @JoinColumn(name="credit_id", nullable=true)
     private Credit credit;

@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Executive extends User{
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "exec-credit")
     @OneToMany(mappedBy = "executive", cascade = CascadeType.ALL)
     private List<Credit> credits = new ArrayList<>();
 

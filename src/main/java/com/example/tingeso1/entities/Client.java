@@ -34,7 +34,7 @@ public class Client extends User{
     @PrimaryKeyJoinColumn
     private ClientEmploymentRecord employmentRecord;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "client-credit")
     @OneToMany(mappedBy="client", cascade = CascadeType.ALL)
     private List<Credit> credits;
 }

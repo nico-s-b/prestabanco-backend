@@ -25,17 +25,17 @@ public class Credit {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @JsonBackReference
+    @JsonBackReference(value = "client-credit")
     @ManyToOne
     @JoinColumn(name="client_id", nullable=false)
     private Client client;
 
-    @JsonBackReference
+    @JsonBackReference(value = "exec-credit")
     @ManyToOne
     @JoinColumn(name = "executive_id")
     private Executive executive;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "credit-docs")
     @OneToMany(mappedBy = "credit", cascade = CascadeType.ALL)
     private List<DocumentEntity> documents;
 
