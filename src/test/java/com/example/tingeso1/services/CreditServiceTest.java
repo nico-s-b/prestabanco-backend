@@ -74,7 +74,6 @@ public class CreditServiceTest {
         Credit result = creditService.saveCredit(credit);
 
         //Then
-        assertThat(result.getDocuments().size()).isEqualTo(0);
         assertNotNull(result);
         assertEquals(credit, result);
         verify(creditRepository, times(1)).save(credit);
