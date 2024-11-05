@@ -21,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @SessionAttributes("userId")
+@CrossOrigin("*")
 public class LoginController {
 
     @Autowired

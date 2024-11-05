@@ -13,6 +13,7 @@ import com.example.tingeso1.entities.ClientCreditRecord;
 
 @RestController
 @RequestMapping("api/v1/creditrecords")
+@CrossOrigin("*")
 public class ClientCreditRecordController {
     @Autowired
     ClientCreditRecordService clientCreditRecordService;
