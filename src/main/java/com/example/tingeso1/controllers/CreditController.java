@@ -21,7 +21,6 @@ import com.example.tingeso1.services.CreditService;
 
 @RestController
 @RequestMapping("api/v1/credits")
-@CrossOrigin("*")
 public class CreditController {
     @Autowired
     CreditService creditService;
