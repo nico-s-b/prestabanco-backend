@@ -21,7 +21,6 @@ import com.example.tingeso1.services.CreditService;
 
 @RestController
 @RequestMapping("api/v1/credits")
-@CrossOrigin(origins = "*")
 public class CreditController {
     @Autowired
     CreditService creditService;
@@ -123,22 +122,26 @@ public class CreditController {
         return ResponseEntity.ok(canceledCredit);
     }
 
-    @GetMapping("/restrictions")
+    @PostMapping("/restrictions")
     public ResponseEntity<Map<String, Float>> getRestrictions(
-            @RequestParam String creditType,
-            @RequestParam int propertyValue) {
+            @RequestBody Map<String, Object> requestData) {
+
+        String creditType = (String) requestData.get("creditType");
+        int propertyValue = Integer.parseInt(requestData.get("propertyValue").toString());
 
         Credit credit = new Credit();
         credit.setCreditType(CreditType.valueOf(creditType));
         credit.setPropertyValue(propertyValue);
 
         Map<String, Float> restrictions = new HashMap<>();
-        restrictions.put("maxLoanPeriod", (float)creditService.getMaxLoanPeriod(credit));
-        restrictions.put("maxFinancingMount", (float)creditService.getMaxFinancingMount(credit));
+        restrictions.put("maxLoanPeriod", (float) creditService.getMaxLoanPeriod(credit));
+        restrictions.put("maxFinancingMount", (float) creditService.getMaxFinancingMount(credit));
         restrictions.put("minAnnualRate", creditService.getMinAnnualRate(credit));
         restrictions.put("maxAnnualRate", creditService.getMaxAnnualRate(credit));
 
         return ResponseEntity.ok(restrictions);
     }
+
+
 
 }

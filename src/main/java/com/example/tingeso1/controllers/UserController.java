@@ -11,7 +11,6 @@ import com.example.tingeso1.services.UserService;
 
 @RestController
 @RequestMapping("api/v1/users")
-@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     UserService userService;

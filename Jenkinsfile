@@ -3,6 +3,14 @@ pipeline {
     tools{
         maven 'maven'
     }
+
+    environment {
+        DB_HOST = 'localhost'
+        DB_PORT = '5432'     
+        DB_USER = 'postgres' 
+        DB_PASS = 'admin'
+    }
+
     stages{
         stage('Build maven'){
             steps{
