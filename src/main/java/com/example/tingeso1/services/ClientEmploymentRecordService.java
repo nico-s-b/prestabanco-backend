@@ -36,7 +36,6 @@ public class ClientEmploymentRecordService {
         return optionalRecord.orElseThrow(() -> new ExecutionException("ClientEmploymentRecord not found for this id :: " + id));
     }
 
-
     public boolean deleteClientEmploymentRecord(Long id) throws Exception {
         try{
             clientEmploymentRecordRepository.deleteById(id);

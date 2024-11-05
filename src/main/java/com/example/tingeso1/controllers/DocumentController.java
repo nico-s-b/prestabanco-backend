@@ -2,6 +2,8 @@ package com.example.tingeso1.controllers;
 
 import java.util.List;
 
+import com.example.tingeso1.entities.Credit;
+import com.example.tingeso1.services.CreditService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import com.example.tingeso1.entities.DocumentEntity;
 public class DocumentController {
     @Autowired
     DocumentService documentService;
+    @Autowired
+    private CreditService creditService;
 
     @GetMapping("/")
     public ResponseEntity<List<DocumentEntity>> listDocuments() {
@@ -32,16 +36,29 @@ public class DocumentController {
         }
     }
 
-    @PostMapping("/")
-    public ResponseEntity<DocumentEntity> saveDocument(@RequestBody DocumentEntity document) {
-        DocumentEntity documentNew = documentService.saveDocument(document);
-        return ResponseEntity.ok(documentNew);
+    @GetMapping("/credit/{id}")
+    public ResponseEntity<List<DocumentEntity>> getDocumentByCreditId(@PathVariable Long id) {
+        List<DocumentEntity> documents = documentService.getDocumentsByCreditId(id);
+        if (!documents.isEmpty()) {
+            return ResponseEntity.ok(documents);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/")
-    public ResponseEntity<DocumentEntity> updateDocument(@RequestBody DocumentEntity document) {
-        DocumentEntity documentUpdated = documentService.updateDocument(document);
-        return ResponseEntity.ok(documentUpdated);
+    public ResponseEntity<DocumentEntity> saveDocument(@RequestBody DocumentEntity document, @RequestParam Long id) {
+        Credit credit = creditService.getCreditById(id);
+        if (credit == null) {
+            return ResponseEntity.notFound().build();
+        }
+        document.setCredit(credit);
+        credit.getDocuments().add(document);
+
+        DocumentEntity savedDocument = documentService.saveDocument(document);
+        creditService.saveCredit(credit);
+
+        return ResponseEntity.ok(savedDocument);
     }
 
     @DeleteMapping("/{id}")

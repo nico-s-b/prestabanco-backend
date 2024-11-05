@@ -57,6 +57,22 @@ public class ClientServiceTest {
     }
 
     @Test
+    void testSaveClient() {
+        //Given
+        Client client = new Client();
+        client.setId(1L);
+
+        when(clientRepository.save(client)).thenReturn(client);
+
+        //When
+        Client savedClient = clientService.saveClient(client);
+
+        assertNotNull(savedClient);
+        verify(clientRepository, times(1)).save(client);
+        assertEquals(1L, savedClient.getId());
+    }
+
+    @Test
     void testGetClientById() {
         // Given
         Long id = 1L;

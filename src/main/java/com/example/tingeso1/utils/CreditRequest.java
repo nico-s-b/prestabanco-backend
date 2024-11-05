@@ -12,4 +12,5 @@ public class CreditRequest {
     private int loanPeriod;
     private int creditMount;
     private int propertyValue;
+    private float annualRate;
 }

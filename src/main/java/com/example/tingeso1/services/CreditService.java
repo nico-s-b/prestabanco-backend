@@ -3,10 +3,17 @@ package com.example.tingeso1.services;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import com.example.tingeso1.entities.Client;
+import com.example.tingeso1.entities.DocumentEntity;
+import com.example.tingeso1.enums.CreditState;
 import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.enums.DocumentType;
+import com.example.tingeso1.utils.CreditRequest;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +29,9 @@ public class CreditService {
     @Autowired
     DocumentService documentService;
 
+    @Autowired
+    ClientService clientService;
+
     public ArrayList<Credit> getCredits(){
         return (ArrayList<Credit>) creditRepository.findAll();
     }
@@ -31,14 +41,20 @@ public class CreditService {
     }
 
     public Credit getCreditById(Long id){
-        return creditRepository.findById(id).get();
+        Optional<Credit> optionalRecord = creditRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("DocumentEntity not found for this id :: " + id));
     }
 
     public ArrayList<Credit>  getCreditsById(Long id){
         return (ArrayList<Credit>) creditRepository.findAllByClientId(id);
     }
 
-    public Credit updateCredit(Credit credit) {
+    public Credit createCredit(CreditRequest request, Client client) {
+        Credit credit = buildCredit(request);
+        credit.setClient(client);
+        client.getCredits().add(credit);
+        credit.setDocuments(new ArrayList<>());
+
         return creditRepository.save(credit);
     }
 
@@ -51,69 +67,22 @@ public class CreditService {
         }
     }
 
-    public void setMaxAnnualRate(Credit credit){
-        if (credit.getCreditType() == CreditType.FIRSTHOME){
-            credit.setAnnualRate(5);
-        }
-        else if (credit.getCreditType() == CreditType.SECONDHOME
-                || credit.getCreditType() == CreditType.REMODELING){
-            credit.setAnnualRate(6);
-        }
-        else if (credit.getCreditType() == CreditType.COMERCIAL) {
-            credit.setAnnualRate(7);
-        }
+    public float getMinAnnualRate(Credit credit) {
+        return switch (credit.getCreditType()) {
+            case FIRSTHOME -> 3.5F;
+            case SECONDHOME -> 4;
+            case COMERCIAL -> 5;
+            case REMODELING -> 4.5F;
+        };
     }
 
-    public void setMinAnnualRate(Credit credit){
-        if (credit.getCreditType() == CreditType.FIRSTHOME){
-            credit.setAnnualRate(3.5F);
-        }
-        else if (credit.getCreditType() == CreditType.SECONDHOME) {
-            credit.setAnnualRate(4);
-        }
-        else if (credit.getCreditType() == CreditType.COMERCIAL) {
-            credit.setAnnualRate(5);
-        }
-        else if (credit.getCreditType() == CreditType.REMODELING) {
-            credit.setAnnualRate(4.5F);
-        }
-    }
-
-    //Método para obtener la cuota mensual de un crédito dado sus parámetros
-    public int getCreditInstallment(Credit credit){
-        int n = credit.getLoanPeriod()*12;
-        double annualRate = credit.getAnnualRate();
-        double rate = annualRate / 12 / 100;
-        double compoundInterest = Math.pow(1 + rate, n);
-        int capital = credit.getCreditMount();
-        return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
-    }
-
-    public boolean verifyMaxFinancingMount(Credit credit){
-        if (credit.getCreditType() == null) {
-            throw new IllegalStateException("CreditType cannot be null");
-        }
-
-        int creditMount = credit.getCreditMount();
-        int propertyValue = credit.getPropertyValue();
-        int financingPercentage = (creditMount / propertyValue)*100;
-
-        switch (credit.getCreditType()){
-            case FIRSTHOME -> {
-                if (financingPercentage < 80) return true;
-            }
-            case SECONDHOME -> {
-                if (financingPercentage < 70) return true;
-            }
-            case COMERCIAL -> {
-                if (financingPercentage < 60) return true;
-            }
-            case REMODELING -> {
-                if (financingPercentage < 50) return true;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + credit.getCreditType());
-        }
-        return false;
+    public float getMaxAnnualRate(Credit credit) {
+        return switch (credit.getCreditType()) {
+            case FIRSTHOME -> 5;
+            case SECONDHOME -> 6;
+            case COMERCIAL -> 7;
+            case REMODELING -> 6;
+        };
     }
 
     public int getMaxFinancingMount(Credit credit) {
@@ -135,52 +104,49 @@ public class CreditService {
         };
     }
 
-    public boolean verifyCreditRequest(Credit credit) {
-        if (credit.getCreditType() == null) {
-            throw new IllegalStateException("CreditType cannot be null");
-        }
-        int loanPeriod = credit.getLoanPeriod();
-        if (loanPeriod > getMaxLoanPeriod(credit)) {
-            return false;
-        }
-        int creditMount = credit.getCreditMount();
-        if (creditMount > getMaxFinancingMount(credit)) {
-            return false;
-        }
-        ArrayList<DocumentType> docs = documentService.whichMissingDocuments(credit);
-        if (!docs.isEmpty()) {
-            return false;
-        }
-        return true;
+    //Método para obtener la cuota mensual de un crédito dado sus parámetros
+    public int getCreditInstallment(Credit credit){
+        int n = credit.getLoanPeriod()*12;
+        double annualRate = credit.getAnnualRate();
+        double rate = annualRate / 12 / 100;
+        double compoundInterest = Math.pow(1 + rate, n);
+        int capital = credit.getCreditMount();
+        return (int) (capital*(rate*compoundInterest)/(compoundInterest - 1));
     }
 
-    //R5 Monto máximo de financiamiento
-    public boolean isCreditAmountLessThanMaxAmount(Credit credit){
-        if (credit.getCreditType() == null) {
-            throw new IllegalStateException("CreditType cannot be null");
-        }
+    public List<Integer> simulateCreditInstallments(CreditRequest request) {
+        Credit credit = buildCredit(request);
 
-        switch (credit.getCreditType()){
-            case FIRSTHOME -> {
-                return credit.getCreditMount() <= credit.getPropertyValue()*0.8;
-            }
-            case SECONDHOME -> {
-                return credit.getCreditMount() <= credit.getPropertyValue()*0.7;
-            }
-            case COMERCIAL -> {
-                return credit.getCreditMount() <= credit.getPropertyValue()*0.6;
-            }
-            case REMODELING -> {
-                return credit.getCreditMount() <= credit.getPropertyValue()*0.5;
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + credit.getCreditType());
-        }
+        credit.setAnnualRate(getMinAnnualRate(credit));
+        int minInstallment = getCreditInstallment(credit);
+
+        credit.setAnnualRate(request.getAnnualRate());
+        int requestedInstallment = getCreditInstallment(credit);
+
+        credit.setAnnualRate(getMaxAnnualRate(credit));
+        int maxInstallment = getCreditInstallment(credit);
+
+        return Arrays.asList(minInstallment, requestedInstallment , maxInstallment);
     }
 
-    //R6 Edad del solicitante
-    public boolean isClientAgeAllowed(Credit credit, Client client){
-        ZonedDateTime endOfPaymentDate = credit.getRequestDate().plusYears((long) credit.getLoanPeriod());
-        int clientAgeAtEndOfPayment = (int) client.getBirthDate().until(endOfPaymentDate, ChronoUnit.YEARS);
-        return clientAgeAtEndOfPayment < 70;
+    public Credit buildCredit(CreditRequest request){
+        Credit credit = new Credit();
+
+        switch (request.getCreditType()) {
+            case "FIRSTHOME" -> credit.setCreditType(CreditType.FIRSTHOME);
+            case "SECONDHOME" -> credit.setCreditType(CreditType.SECONDHOME);
+            case "COMERCIAL" -> credit.setCreditType(CreditType.COMERCIAL);
+            case "REMODELING" -> credit.setCreditType(CreditType.REMODELING);
+            default -> throw new IllegalArgumentException("Tipo de crédito no válido: " + request.getCreditType());
+        }
+
+        credit.setLoanPeriod(request.getLoanPeriod());
+        credit.setCreditMount(request.getCreditMount());
+        credit.setPropertyValue(request.getPropertyValue());
+        credit.setAnnualRate(request.getAnnualRate());
+        credit.setRequestDate(ZonedDateTime.now());
+        credit.setLastUpdateDate(ZonedDateTime.now());
+        credit.setState(CreditState.INITIALREV);
+        return credit;
     }
 }

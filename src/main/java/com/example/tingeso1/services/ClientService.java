@@ -2,11 +2,13 @@ package com.example.tingeso1.services;
 
 import com.example.tingeso1.entities.*;
 import com.example.tingeso1.repositories.CreditRepository;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.tingeso1.repositories.ClientRepository;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClientService {
@@ -25,7 +27,8 @@ public class ClientService {
     }
 
     public Client getClientById(Long id){
-        return clientRepository.findById(id).get();
+        Optional<Client> optionalRecord = clientRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("Client not found for this id :: " + id));
     }
 
     public List<Credit> getClientRequest(Client client) {

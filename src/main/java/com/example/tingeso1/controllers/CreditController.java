@@ -52,10 +52,16 @@ public class CreditController {
         return ResponseEntity.ok(credits);
     }
 
+    @PostMapping("/")
+    public ResponseEntity<Credit> createCredit(@RequestBody Credit credit) {
+        Credit creditCreated = creditService.saveCredit(credit);
+        return ResponseEntity.ok(creditCreated);
+    }
+
     @PutMapping("/{creditId}")
     public ResponseEntity<Credit> updateCredit(@PathVariable Long creditId, @RequestBody Credit credit) {
         credit.setId(creditId);
-        Credit creditUpdated = creditService.updateCredit(credit);
+        Credit creditUpdated = creditService.saveCredit(credit);
         return ResponseEntity.ok(creditUpdated);
     }
 
@@ -75,14 +81,7 @@ public class CreditController {
             return ResponseEntity.badRequest().body(null);
         }
 
-        Credit credit = buildCredit(request);
-
-        creditService.setMaxAnnualRate(credit);
-        int maxInstallment = creditService.getCreditInstallment(credit);
-        creditService.setMinAnnualRate(credit);
-        int minInstallment = creditService.getCreditInstallment(credit);
-
-        List<Integer> installments = Arrays.asList(minInstallment, maxInstallment);
+        List<Integer> installments = creditService.simulateCreditInstallments(request);
         return ResponseEntity.ok(installments);
     }
 
@@ -97,31 +96,25 @@ public class CreditController {
             return ResponseEntity.badRequest().body(null);
         }
 
-        Credit credit = buildCredit(request);
-        credit.setRequestDate(ZonedDateTime.now());
-        credit.setLastUpdateDate(ZonedDateTime.now());
-        credit.setState(CreditState.INITIALREV);
-
-        credit.setClient(client);
-        client.getCredits().add(credit);
-        clientService.saveClient(client);
-
-        return ResponseEntity.ok(credit);
+        Credit creditCreated = creditService.createCredit(request, client);
+        return ResponseEntity.ok(creditCreated);
     }
 
     @PutMapping("/initialrev")
     public ResponseEntity<Credit> initialrev(@RequestBody Credit credit, @RequestParam Long clientId) {
         Client client = credit.getClient();
-
+        if (client == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
 
         credit.setLastUpdateDate(ZonedDateTime.now());
-        Credit creditChecked = creditService.updateCredit(credit);
+        Credit creditChecked = creditService.saveCredit(credit);
         return ResponseEntity.ok(creditChecked);
     }
 
 
     @GetMapping("/restrictions")
-    public ResponseEntity<Map<String, Integer>> getRestrictions(
+    public ResponseEntity<Map<String, Float>> getRestrictions(
             @RequestParam String creditType,
             @RequestParam int propertyValue) {
 
@@ -129,29 +122,13 @@ public class CreditController {
         credit.setCreditType(CreditType.valueOf(creditType));
         credit.setPropertyValue(propertyValue);
 
-        Map<String, Integer> restrictions = new HashMap<>();
-        restrictions.put("maxLoanPeriod", creditService.getMaxLoanPeriod(credit));
-        restrictions.put("maxFinancingMount", creditService.getMaxFinancingMount(credit));
+        Map<String, Float> restrictions = new HashMap<>();
+        restrictions.put("maxLoanPeriod", (float)creditService.getMaxLoanPeriod(credit));
+        restrictions.put("maxFinancingMount", (float)creditService.getMaxFinancingMount(credit));
+        restrictions.put("minAnnualRate", creditService.getMinAnnualRate(credit));
+        restrictions.put("maxAnnualRate", creditService.getMaxAnnualRate(credit));
 
         return ResponseEntity.ok(restrictions);
-    }
-
-    Credit buildCredit(CreditRequest request){
-        Credit credit = new Credit();
-
-        switch (request.getCreditType()) {
-            case "FIRSTHOME" -> credit.setCreditType(CreditType.FIRSTHOME);
-            case "SECONDHOME" -> credit.setCreditType(CreditType.SECONDHOME);
-            case "COMERCIAL" -> credit.setCreditType(CreditType.COMERCIAL);
-            case "REMODELING" -> credit.setCreditType(CreditType.REMODELING);
-            default -> throw new IllegalArgumentException("Tipo de crédito no válido: " + request.getCreditType());
-        }
-
-        credit.setLoanPeriod(request.getLoanPeriod());
-        credit.setCreditMount(request.getCreditMount());
-        credit.setPropertyValue(request.getPropertyValue());
-
-        return credit;
     }
 
 }

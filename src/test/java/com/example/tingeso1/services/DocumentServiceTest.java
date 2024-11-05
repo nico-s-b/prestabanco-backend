@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -88,20 +89,33 @@ public class DocumentServiceTest {
     }
 
     @Test
-    void testUpdateDocument() {
+    void testGetDocumentByCreditId() {
         //Given
-        DocumentEntity document = new DocumentEntity();
-        document.setId(1L);
+        Credit credit = new Credit();
+        credit.setId(1L);
 
-        when(documentRepository.save(document)).thenReturn(document);
+        DocumentEntity document1 = new DocumentEntity();
+        DocumentEntity document2 = new DocumentEntity();
+        DocumentEntity document3 = new DocumentEntity();
 
+        document1.setCredit(credit);
+        document2.setCredit(credit);
+        document3.setCredit(credit);
+
+        List<DocumentEntity> documents = Arrays.asList(document1, document2, document3);
+        // Mock de la respuesta del repositorio
+        when(documentRepository.findAllByCreditId(credit.getId())).thenReturn(documents);
         //When
-        DocumentEntity result = documentService.updateDocument(document);
+        List<DocumentEntity> result = documentService.getDocumentsByCreditId(credit.getId());
 
         //Then
-        assertNotNull(result);
-        assertEquals(document, result);
-        verify(documentRepository, times(1)).save(document);
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(3);
+        assertEquals(document1, result.get(0));
+        assertEquals(document2, result.get(1));
+        assertEquals(document3, result.get(2));
+
+        verify(documentRepository, times(1)).findAllByCreditId(credit.getId());
     }
 
     @Test

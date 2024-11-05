@@ -1,9 +1,13 @@
 package com.example.tingeso1.services;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import com.example.tingeso1.entities.Credit;
 import com.example.tingeso1.enums.DocumentType;
+import org.hibernate.sql.exec.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +27,17 @@ public class DocumentService {
     }
 
     public DocumentEntity saveDocument(DocumentEntity document){
+        document.setUploadDate(ZonedDateTime.now());
         return documentRepository.save(document);
     }
 
     public DocumentEntity getDocumentById(Long id){
-        return documentRepository.findById(id).get();
+        Optional<DocumentEntity> optionalRecord = documentRepository.findById(id);
+        return optionalRecord.orElseThrow(() -> new ExecutionException("DocumentEntity not found for this id :: " + id));
     }
 
-    public DocumentEntity updateDocument(DocumentEntity document) {
-        return documentRepository.save(document);
+    public List<DocumentEntity> getDocumentsByCreditId(Long creditId){
+        return documentRepository.findAllByCreditId(creditId);
     }
 
     public boolean deleteDocument(Long id) throws Exception {
