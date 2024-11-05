@@ -12,7 +12,6 @@ import com.example.tingeso1.services.ExecutiveService;
 
 @RestController
 @RequestMapping("api/v1/executives")
-@CrossOrigin("*")
 public class ExecutiveController {
     @Autowired
     ExecutiveService executiveService;
