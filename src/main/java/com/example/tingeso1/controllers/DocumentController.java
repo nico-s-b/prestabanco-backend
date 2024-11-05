@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/v1/documents")
+@CrossOrigin(origins = "http://prestabanco.brazilsouth.cloudapp.azure.com:8070")
 public class DocumentController {
     @Autowired
     DocumentService documentService;

@@ -21,6 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @SessionAttributes("userId")
+@CrossOrigin(origins = "http://prestabanco.brazilsouth.cloudapp.azure.com:8070")
 public class LoginController {
 
     @Autowired

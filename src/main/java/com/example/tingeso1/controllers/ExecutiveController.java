@@ -12,6 +12,7 @@ import com.example.tingeso1.services.ExecutiveService;
 
 @RestController
 @RequestMapping("api/v1/executives")
+@CrossOrigin(origins = "http://prestabanco.brazilsouth.cloudapp.azure.com:8070")
 public class ExecutiveController {
     @Autowired
     ExecutiveService executiveService;

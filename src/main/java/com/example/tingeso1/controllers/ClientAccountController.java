@@ -13,6 +13,7 @@ import com.example.tingeso1.entities.Client;
 
 @RestController
 @RequestMapping("api/v1/accounts")
+@CrossOrigin(origins = "http://prestabanco.brazilsouth.cloudapp.azure.com:8070")
 public class ClientAccountController {
     @Autowired
     ClientAccountService clientAccountService;
