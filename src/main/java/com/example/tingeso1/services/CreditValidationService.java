@@ -48,25 +48,6 @@ public class CreditValidationService {
         return false;
     }
 
-    public boolean verifyCreditRequest(Credit credit) {
-        if (credit.getCreditType() == null) {
-            throw new IllegalStateException("CreditType cannot be null");
-        }
-        int loanPeriod = credit.getLoanPeriod();
-        if (loanPeriod > creditService.getMaxLoanPeriod(credit)) {
-            return false;
-        }
-        int creditMount = credit.getCreditMount();
-        if (creditMount > creditService.getMaxFinancingMount(credit)) {
-            return false;
-        }
-        ArrayList<DocumentType> docs = documentService.whichMissingDocuments(credit);
-        if (!docs.isEmpty()) {
-            return false;
-        }
-        return true;
-    }
-
     //R5 Monto máximo de financiamiento
     public boolean isCreditAmountLessThanMaxAmount(Credit credit){
         if (credit.getCreditType() == null) {

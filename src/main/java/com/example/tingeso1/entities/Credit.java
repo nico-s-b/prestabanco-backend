@@ -12,6 +12,7 @@ import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.enums.CreditState;
 
 import jakarta.persistence.*;
+import lombok.ToString;
 
 @Entity
 @Table(name = "credits")
@@ -27,6 +28,7 @@ public class Credit {
 
     @JsonBackReference(value = "client-credit")
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name="client_id", nullable=false)
     private Client client;
 

@@ -151,7 +151,7 @@ public class CreditServiceTest {
 
     @Test
     void testCreateCredit() {
-        //Given
+        // Given
         CreditRequest creditRequest = new CreditRequest();
         creditRequest.setCreditType("FIRSTHOME");
         creditRequest.setLoanPeriod(15);
@@ -165,16 +165,19 @@ public class CreditServiceTest {
         Credit mockCredit = new Credit();
         doReturn(mockCredit).when(spyService).buildCredit(creditRequest);
 
-        //When
+        when(creditRepository.save(mockCredit)).thenReturn(mockCredit);
+
+        // When
         Credit result = spyService.createCredit(creditRequest, client);
 
-        //Then
+        // Then
         assertNotNull(result);
         assertEquals(mockCredit, result);
         assertTrue(client.getCredits().contains(result));
 
         verify(clientService, times(1)).saveClient(client);
     }
+
 
     @Test
     void testDeleteCredit_Success() throws Exception {

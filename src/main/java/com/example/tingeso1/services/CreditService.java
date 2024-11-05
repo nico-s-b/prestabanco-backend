@@ -55,6 +55,7 @@ public class CreditService {
         client.getCredits().add(credit);
         credit.setDocuments(new ArrayList<>());
 
+        clientService.saveClient(client);
         return creditRepository.save(credit);
     }
 
