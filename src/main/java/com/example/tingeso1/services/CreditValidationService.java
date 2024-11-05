@@ -2,6 +2,7 @@ package com.example.tingeso1.services;
 
 import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.entities.Credit;
+import com.example.tingeso1.enums.CreditState;
 import com.example.tingeso1.enums.DocumentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,4 +78,16 @@ public class CreditValidationService {
         int clientAgeAtEndOfPayment = (int) client.getBirthDate().until(endOfPaymentDate, ChronoUnit.YEARS);
         return clientAgeAtEndOfPayment < 70;
     }
+
+    public Credit documentRevision(Credit credit){
+        ArrayList<DocumentType> docsNeeded = documentService.whichMissingDocuments(credit);
+        if (docsNeeded.isEmpty()) {
+            credit.setState(CreditState.EVALUATING);
+        } else {
+            credit.setState(CreditState.PENDINGDOCUMENTATION);
+        }
+        creditService.saveCredit(credit);
+        return credit;
+    }
+
 }

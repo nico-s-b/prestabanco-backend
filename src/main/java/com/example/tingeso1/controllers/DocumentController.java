@@ -60,16 +60,19 @@ public class DocumentController {
             return ResponseEntity.notFound().build();
         }
 
+        byte[] fileBytes = fileData.getBytes();
+
         DocumentEntity document = new DocumentEntity();
         document.setCredit(credit);
         document.setDocumentType(DocumentType.valueOf(documentType));
-        document.setFileData(fileData.getBytes());
+        document.setFileData(fileBytes);
 
         DocumentEntity savedDocument = documentService.saveDocument(document);
         creditService.saveCredit(credit);
 
         return ResponseEntity.ok(savedDocument);
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteDocumentById(@PathVariable Long id) throws Exception {

@@ -80,6 +80,22 @@ public class CreditServiceTest {
     }
 
     @Test
+    void testCancelCredit() {
+        // Given
+        Credit credit = new Credit();
+        credit.setState(CreditState.INITIALREV);
+        when(creditRepository.save(credit)).thenReturn(credit);
+
+        // When
+        creditService.cancelCredit(credit);
+
+        // Then
+        verify(creditRepository, times(1)).save(credit);
+        assertThat(credit.getState()).isEqualTo(CreditState.CANCELLED);
+    }
+
+
+    @Test
     void testSaveCredit_Docs() {
         //Given
         Credit credit = new Credit();

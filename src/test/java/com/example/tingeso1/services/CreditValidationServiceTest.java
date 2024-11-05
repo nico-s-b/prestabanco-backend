@@ -2,7 +2,9 @@ package com.example.tingeso1.services;
 
 import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.entities.Credit;
+import com.example.tingeso1.enums.CreditState;
 import com.example.tingeso1.enums.CreditType;
+import com.example.tingeso1.enums.DocumentType;
 import com.example.tingeso1.repositories.CreditRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,10 +14,11 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CreditValidationServiceTest {
     @InjectMocks
@@ -233,5 +236,34 @@ public class CreditValidationServiceTest {
         //Then
         assertFalse(result);
     }
+
+    @Test
+    void testDocumentRevision_NoMissingDocuments() {
+        // Given
+        ArrayList<DocumentType> missingDocs = new ArrayList<>();
+        when(documentService.whichMissingDocuments(credit)).thenReturn((missingDocs));
+
+        // When
+        Credit result = validationService.documentRevision(credit);
+
+        // Then
+        assertEquals(CreditState.EVALUATING, result.getState());
+        verify(creditService, times(1)).saveCredit(credit);
+    }
+
+    @Test
+    void testDocumentRevision_WithMissingDocuments() {
+        // Given
+        ArrayList<DocumentType> missingDocs = new ArrayList<>();
+        missingDocs.add(DocumentType.INCOMECERTIFY);
+        when(documentService.whichMissingDocuments(credit)).thenReturn(missingDocs);
+
+        // When
+        Credit result = validationService.documentRevision(credit);
+
+        // Then
+        assertEquals(CreditState.PENDINGDOCUMENTATION, result.getState());
+        verify(creditService, times(1)).saveCredit(credit);
+    }    
 
 }

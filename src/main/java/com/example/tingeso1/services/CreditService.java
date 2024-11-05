@@ -37,6 +37,12 @@ public class CreditService {
     }
 
     public Credit saveCredit(Credit credit){
+        credit.setLastUpdateDate(ZonedDateTime.now());
+        return creditRepository.save(credit);
+    }
+
+    public Credit cancelCredit(Credit credit){
+        credit.setState(CreditState.CANCELLED);
         return creditRepository.save(credit);
     }
 

@@ -10,6 +10,7 @@ import com.example.tingeso1.entities.Client;
 import com.example.tingeso1.enums.CreditState;
 import com.example.tingeso1.enums.CreditType;
 import com.example.tingeso1.services.ClientService;
+import com.example.tingeso1.services.CreditValidationService;
 import com.example.tingeso1.utils.CreditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,8 @@ public class CreditController {
     CreditService creditService;
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private CreditValidationService creditValidationService;
 
     @GetMapping("/")
     public ResponseEntity<List<Credit>> listCredits() {
@@ -100,18 +103,25 @@ public class CreditController {
         return ResponseEntity.ok(creditCreated);
     }
 
-    @PutMapping("/initialrev")
-    public ResponseEntity<Credit> initialrev(@RequestBody Credit credit, @RequestParam Long clientId) {
-        Client client = credit.getClient();
-        if (client == null) {
+    @GetMapping("/docvalid")
+    public ResponseEntity<Credit> documentValidation(@RequestParam Long id) {
+        Credit credit = creditService.getCreditById(id);
+        if (credit == null) {
             return ResponseEntity.badRequest().body(null);
         }
-
-        credit.setLastUpdateDate(ZonedDateTime.now());
-        Credit creditChecked = creditService.saveCredit(credit);
+        Credit creditChecked = creditValidationService.documentRevision(credit);
         return ResponseEntity.ok(creditChecked);
     }
 
+    @GetMapping("/cancel")
+    public ResponseEntity<Credit> cancelCredit(@RequestParam Long id) {
+        Credit credit = creditService.getCreditById(id);
+        if (credit == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        Credit canceledCredit = creditService.cancelCredit(credit);
+        return ResponseEntity.ok(canceledCredit);
+    }
 
     @GetMapping("/restrictions")
     public ResponseEntity<Map<String, Float>> getRestrictions(

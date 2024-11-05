@@ -34,8 +34,7 @@ public class DocumentEntity {
     @Enumerated(EnumType.STRING)
     private DocumentType documentType;
 
-    @Lob
-    @Column(columnDefinition = "BYTEA")
+    @Column(columnDefinition = "BYTEA",name = "file_data", nullable = false)
     private byte[] fileData;
 
     private ZonedDateTime uploadDate;
