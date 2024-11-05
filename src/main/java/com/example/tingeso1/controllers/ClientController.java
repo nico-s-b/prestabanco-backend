@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/clients")
-@CrossOrigin(origins = "http://prestabanco.brazilsouth.cloudapp.azure.com:8070")
+@CrossOrigin(origins = "*")
 public class ClientController {
     @Autowired
     ClientService clientService;
